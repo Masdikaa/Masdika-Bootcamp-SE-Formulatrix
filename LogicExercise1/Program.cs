@@ -1,7 +1,7 @@
 ﻿namespace LogicExercise
 {
- class Program
-   {
+    class Program
+    {
         static void Main(string[] args)
         {
             Console.Write("Input your number : ");
@@ -25,10 +25,9 @@
                 {
                     Console.Write(i);
                 }
-                
                 Console.Write(",");
-            } 
-        
+            }
+
         }
-   }
+    }
 }
