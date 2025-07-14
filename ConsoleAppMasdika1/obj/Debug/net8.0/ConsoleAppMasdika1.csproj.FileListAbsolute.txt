@@ -12,3 +12,4 @@ C:\Users\Formulatrix\Documents\Masdika\ConsoleAppMasdika1\obj\Debug\net8.0\refin
 C:\Users\Formulatrix\Documents\Masdika\ConsoleAppMasdika1\obj\Debug\net8.0\ConsoleAppMasdika1.pdb
 C:\Users\Formulatrix\Documents\Masdika\ConsoleAppMasdika1\obj\Debug\net8.0\ConsoleAppMasdika1.genruntimeconfig.cache
 C:\Users\Formulatrix\Documents\Masdika\ConsoleAppMasdika1\obj\Debug\net8.0\ref\ConsoleAppMasdika1.dll
+C:\Users\Formulatrix\Documents\Masdika\ConsoleAppMasdika1\obj\Debug\net8.0\ConsoleAppMasdika1.sourcelink.json
