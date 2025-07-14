@@ -1,0 +1,14 @@
+C:\Users\Formulatrix\Documents\Masdika\ConsoleAppMasdika1\bin\Debug\net8.0\ConsoleAppMasdika1.exe
+C:\Users\Formulatrix\Documents\Masdika\ConsoleAppMasdika1\bin\Debug\net8.0\ConsoleAppMasdika1.deps.json
+C:\Users\Formulatrix\Documents\Masdika\ConsoleAppMasdika1\bin\Debug\net8.0\ConsoleAppMasdika1.runtimeconfig.json
+C:\Users\Formulatrix\Documents\Masdika\ConsoleAppMasdika1\bin\Debug\net8.0\ConsoleAppMasdika1.dll
+C:\Users\Formulatrix\Documents\Masdika\ConsoleAppMasdika1\bin\Debug\net8.0\ConsoleAppMasdika1.pdb
+C:\Users\Formulatrix\Documents\Masdika\ConsoleAppMasdika1\obj\Debug\net8.0\ConsoleAppMasdika1.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Formulatrix\Documents\Masdika\ConsoleAppMasdika1\obj\Debug\net8.0\ConsoleAppMasdika1.AssemblyInfoInputs.cache
+C:\Users\Formulatrix\Documents\Masdika\ConsoleAppMasdika1\obj\Debug\net8.0\ConsoleAppMasdika1.AssemblyInfo.cs
+C:\Users\Formulatrix\Documents\Masdika\ConsoleAppMasdika1\obj\Debug\net8.0\ConsoleAppMasdika1.csproj.CoreCompileInputs.cache
+C:\Users\Formulatrix\Documents\Masdika\ConsoleAppMasdika1\obj\Debug\net8.0\ConsoleAppMasdika1.dll
+C:\Users\Formulatrix\Documents\Masdika\ConsoleAppMasdika1\obj\Debug\net8.0\refint\ConsoleAppMasdika1.dll
+C:\Users\Formulatrix\Documents\Masdika\ConsoleAppMasdika1\obj\Debug\net8.0\ConsoleAppMasdika1.pdb
+C:\Users\Formulatrix\Documents\Masdika\ConsoleAppMasdika1\obj\Debug\net8.0\ConsoleAppMasdika1.genruntimeconfig.cache
+C:\Users\Formulatrix\Documents\Masdika\ConsoleAppMasdika1\obj\Debug\net8.0\ref\ConsoleAppMasdika1.dll
