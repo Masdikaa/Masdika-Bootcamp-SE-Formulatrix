@@ -6,7 +6,7 @@ namespace NamaProyek
    {
        static void Main(string[] args)
        {
-          Console.WriteLine("Hello, World!");
+          Console.WriteLine("Masdika Ilhan Mansiz !");
        }
    }
 }
