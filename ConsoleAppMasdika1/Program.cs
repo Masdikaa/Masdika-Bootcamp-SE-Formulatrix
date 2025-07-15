@@ -30,12 +30,9 @@ namespace Main {
             string firstName;
             string lastName;
 
-            Parameter.Split(fullName, out firstName, out lastName);
+            Parameter.Split(fullName, out firstName, out lastName); // Assing out value into variable
 
             Console.WriteLine(firstName + "-" + lastName);
-
-            int mPosition = fullName.LastIndexOf('M');
-            Console.WriteLine(mPosition);
 
         }
     }

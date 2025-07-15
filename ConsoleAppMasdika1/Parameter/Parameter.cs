@@ -25,7 +25,7 @@ class Parameter {
     }
 
     public static void Split(string fullName, out string firstName, out string lastName) {
-        int i = fullName.LastIndexOf(' ');
+        int i = fullName.LastIndexOf(' '); // Return index value of char in string
         Console.WriteLine("i = " + i);
         firstName = fullName.Substring(0, i);
         lastName = fullName.Substring(i + 1);
