@@ -1,6 +1,4 @@
-﻿using System.Xml;
-
-namespace Main {
+﻿namespace Main {
     class Program {
         static void Main() {
             int x = 10;
@@ -31,9 +29,24 @@ namespace Main {
             string lastName;
 
             Parameter.Split(fullName, out firstName, out lastName); // Assing out value into variable
-
             Console.WriteLine(firstName + "-" + lastName);
 
+            // Checked overflow
+            // Check.NumericCheck();
+
+            // Ternary Operation
+            int maxNum = Max(23, 21);
+            Console.WriteLine(maxNum);
+
+            // Raw String Literal
+            string raw = """This string contains "double quotes" without escaping.""";
+            Console.WriteLine(raw);
+
         }
+
+        static int Max(int a, int b) {
+            return (a > b) ? a : b;  //Ternary 
+        }
+
     }
 }

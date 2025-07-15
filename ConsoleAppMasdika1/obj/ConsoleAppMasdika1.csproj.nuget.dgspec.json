@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Formulatrix\\Documents\\Masdika\\ConsoleAppMasdika1\\ConsoleAppMasdika1.csproj": {}
+    "C:\\Users\\Masdika Ilhan Mansiz\\Documents\\Masdika\\Masdika-Bootcamp-SE-Formulatrix\\ConsoleAppMasdika1\\ConsoleAppMasdika1.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Formulatrix\\Documents\\Masdika\\ConsoleAppMasdika1\\ConsoleAppMasdika1.csproj": {
+    "C:\\Users\\Masdika Ilhan Mansiz\\Documents\\Masdika\\Masdika-Bootcamp-SE-Formulatrix\\ConsoleAppMasdika1\\ConsoleAppMasdika1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Formulatrix\\Documents\\Masdika\\ConsoleAppMasdika1\\ConsoleAppMasdika1.csproj",
+        "projectUniqueName": "C:\\Users\\Masdika Ilhan Mansiz\\Documents\\Masdika\\Masdika-Bootcamp-SE-Formulatrix\\ConsoleAppMasdika1\\ConsoleAppMasdika1.csproj",
         "projectName": "ConsoleAppMasdika1",
-        "projectPath": "C:\\Users\\Formulatrix\\Documents\\Masdika\\ConsoleAppMasdika1\\ConsoleAppMasdika1.csproj",
-        "packagesPath": "C:\\Users\\Formulatrix\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Formulatrix\\Documents\\Masdika\\ConsoleAppMasdika1\\obj\\",
+        "projectPath": "C:\\Users\\Masdika Ilhan Mansiz\\Documents\\Masdika\\Masdika-Bootcamp-SE-Formulatrix\\ConsoleAppMasdika1\\ConsoleAppMasdika1.csproj",
+        "packagesPath": "C:\\Users\\Masdika Ilhan Mansiz\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Masdika Ilhan Mansiz\\Documents\\Masdika\\Masdika-Bootcamp-SE-Formulatrix\\ConsoleAppMasdika1\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Formulatrix\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Masdika Ilhan Mansiz\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"

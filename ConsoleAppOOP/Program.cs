@@ -28,7 +28,10 @@ class Person() {
 namespace MainOOP {
     class Program() {
         public static void Main() {
-
+            long a = 1000000;
+            long b = 1000000;
+            long c = a * b;
+            Console.WriteLine(c);
         }
     }
 }
