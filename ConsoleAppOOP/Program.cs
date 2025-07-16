@@ -20,10 +20,6 @@ Class member
 - The Named Operator
 
 */
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using Inheritance;
 
 namespace MainOOP {
@@ -51,7 +47,6 @@ namespace MainOOP {
             Program SumNum = new Program();
             int totalNumbers = SumNum.SumOfNumbers(numbers); // Need to create an object bcs SumOfNumbers is not static
             Console.WriteLine(totalNumbers);
-
 
             Fruit apple = new Fruit(color: "Red", size: "Small");
             apple.ShowColor();
