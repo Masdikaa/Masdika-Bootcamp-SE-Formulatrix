@@ -20,6 +20,12 @@ Class member
 - The Named Operator
 
 */
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
+using Inheritance;
+
 namespace MainOOP {
     class Program() {
         public static void Main() {
@@ -51,7 +57,6 @@ namespace MainOOP {
             apple.ShowColor();
             apple.ShowSize();
 
-
             // Set and Get
             Fruit banana = new Fruit(color: "Yellow", size: "Large");
             banana.SetSeed("BananaSeed"); // Set seed
@@ -59,6 +64,68 @@ namespace MainOOP {
             Console.WriteLine(banana.Seed);
             Console.WriteLine(banana.Price);
 
+            Fruit orange = new Fruit("Orange", "Smalls");
+            orange.Price = 50_000;
+            decimal orangePrice = orange.Price;
+
+            orange.Weight = 10.0;
+            Console.WriteLine("Orange Weight : " + orange.Weight);
+
+            // Inheritance
+            Room roomA = new Room { Area = 10000 };
+            Decoration decRoomA = new Decoration {
+                Area = roomA.Area,
+                DecorationList = new string[] { "Painting", "Porcelain" }
+            };
+            Furniture furRoomA = new Furniture {
+                Area = roomA.Area,
+                FurnitureList = new string[] { "Carpet", "Table" }
+            };
+
+            Console.WriteLine($"Area : {roomA.Area}");
+            Console.WriteLine($"Room Decoration List : {string.Join(", ", decRoomA.DecorationList)}");
+            Console.WriteLine($"Room Furniture  List : {string.Join(", ", furRoomA.FurnitureList)}");
+
+            Animal dog = new Animal("Mammals");
+            Dog husky = new Dog(name: "Scooby");
+
+            dog.Breathe();
+            husky.Bark();
+
+            TestAnimal(dog);
+            TestAnimal(husky);
+
+            // Casting reference and Conversion
+            // Upcasting -> Create a base class from subclass | implicit convertion
+            Dog bagas = new Dog("Bagas");
+            Animal animal1 = bagas; // Karena dog adalah bagian dari animal maka bagas bisa di upcase jadi animal
+
+            // Downcasting -> Creating a subclass from base class reference | explicit
+            Dog dhimas = new Dog("Dimas");
+            Animal animal2 = dhimas; // Upcasting 
+            Dog dhimas2 = (Dog)animal2; //
+            Console.WriteLine(dhimas2 == animal2); // true
+            Console.WriteLine(dhimas2 == dhimas); // true
+
+
+            // The as Operator
+            // Return null when downcasting fail
+            Animal animal3 = new Animal("The as Operator");
+            Dog arifin = animal3 as Dog; // Return null
+            if (arifin != null) arifin.Bark();
+
+            // The is Operator
+            // Tests whether a variable matches a pattern
+            Animal animal4 = new Dog("Juan");
+            if (animal4 is Dog) {
+                Console.WriteLine("Animal4 is Dog");
+            }
+
+        }
+
+        // Polymorphism
+        public static void TestAnimal(Animal animal) {
+            animal.Breathe();
         }
 
         int SumOfNumbers(int[] numbers) {
@@ -70,42 +137,5 @@ namespace MainOOP {
 
             return total;
         }
-    }
-}
-
-
-class Fruit {
-    public string color;
-    public string size;
-
-    private decimal _price; // -> Private field 
-    // Setter and Getter
-    // Basic
-    public decimal Price {
-        get { return _price; }
-        set { _price = value; }
-    }
-
-    // Auto Implemented Property > Set and Get
-    public double Weight { get; set; }
-
-    // Get / Set Only
-    // ReadOnly (Get)
-    public string Seed { get; private set; }
-    public void SetSeed(string newSeed) {
-        Seed = newSeed;
-    }
-
-    public Fruit(string color, string size) {
-        this.color = color;
-        this.size = size;
-    }
-
-    public void ShowColor() {
-        Console.WriteLine(this.color);
-    }
-
-    public void ShowSize() {
-        Console.WriteLine(this.size);
     }
 }
