@@ -24,10 +24,20 @@ namespace MainOOP {
     class Program() {
         public static void Main() {
             // Object from Person.cs
-            Person person1 = new Person("JagoanMama123"); // Assigning readonly personId | the readonly value cant be changed
+            Person person1 = new Person(fullName: "Alex", personId: "JagoanMama123"); // Assigning readonly personId | the readonly value cant be changed
             // person1.personId = "JagoanPapah"; // the readonly value cant be changed | Compile Error
             Console.WriteLine(person1.personId);
 
+            Person person2 = new Person(
+                fullName: "David",
+                personId: "David321"
+            );
+
+            person1.PersonInfo();
+            Console.WriteLine();
+
+            Person person3 = new Person("Masdika Ilhan Mansiz", age: 23, "Basah^Kuyup#69");
+            person3.PersonInfo();
 
             // Sum of int Array 
             int[] numbers = new int[5] { 2, 7, 4, 5, 9 };
@@ -40,6 +50,14 @@ namespace MainOOP {
             Fruit apple = new Fruit(color: "Red", size: "Small");
             apple.ShowColor();
             apple.ShowSize();
+
+
+            // Set and Get
+            Fruit banana = new Fruit(color: "Yellow", size: "Large");
+            banana.SetSeed("BananaSeed"); // Set seed
+            banana.Price = 102811282311; // Set price
+            Console.WriteLine(banana.Seed);
+            Console.WriteLine(banana.Price);
 
         }
 
@@ -59,6 +77,24 @@ namespace MainOOP {
 class Fruit {
     public string color;
     public string size;
+
+    private decimal _price; // -> Private field 
+    // Setter and Getter
+    // Basic
+    public decimal Price {
+        get { return _price; }
+        set { _price = value; }
+    }
+
+    // Auto Implemented Property > Set and Get
+    public double Weight { get; set; }
+
+    // Get / Set Only
+    // ReadOnly (Get)
+    public string Seed { get; private set; }
+    public void SetSeed(string newSeed) {
+        Seed = newSeed;
+    }
 
     public Fruit(string color, string size) {
         this.color = color;
