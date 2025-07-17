@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccessModifier", "AccessMod
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interface", "Interface\Interface.csproj", "{FEC6DFC1-9C45-4566-9F4F-A192F3E98512}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Generic", "Generic\Generic.csproj", "{97A9CAC4-D8E4-4E6F-B0C2-BB5B34BE974D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,18 @@ Global
 		{FEC6DFC1-9C45-4566-9F4F-A192F3E98512}.Release|x64.Build.0 = Release|Any CPU
 		{FEC6DFC1-9C45-4566-9F4F-A192F3E98512}.Release|x86.ActiveCfg = Release|Any CPU
 		{FEC6DFC1-9C45-4566-9F4F-A192F3E98512}.Release|x86.Build.0 = Release|Any CPU
+		{97A9CAC4-D8E4-4E6F-B0C2-BB5B34BE974D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97A9CAC4-D8E4-4E6F-B0C2-BB5B34BE974D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97A9CAC4-D8E4-4E6F-B0C2-BB5B34BE974D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{97A9CAC4-D8E4-4E6F-B0C2-BB5B34BE974D}.Debug|x64.Build.0 = Debug|Any CPU
+		{97A9CAC4-D8E4-4E6F-B0C2-BB5B34BE974D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{97A9CAC4-D8E4-4E6F-B0C2-BB5B34BE974D}.Debug|x86.Build.0 = Debug|Any CPU
+		{97A9CAC4-D8E4-4E6F-B0C2-BB5B34BE974D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97A9CAC4-D8E4-4E6F-B0C2-BB5B34BE974D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97A9CAC4-D8E4-4E6F-B0C2-BB5B34BE974D}.Release|x64.ActiveCfg = Release|Any CPU
+		{97A9CAC4-D8E4-4E6F-B0C2-BB5B34BE974D}.Release|x64.Build.0 = Release|Any CPU
+		{97A9CAC4-D8E4-4E6F-B0C2-BB5B34BE974D}.Release|x86.ActiveCfg = Release|Any CPU
+		{97A9CAC4-D8E4-4E6F-B0C2-BB5B34BE974D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -26,7 +26,14 @@
 
             Console.WriteLine($"Print Price :{((IPrinter)m).Price()}");
             Console.WriteLine($"Scan  Price :{((IScanner)m).Price()}");
+            /*-------------------------------------------------------*/
 
+            ((ILogger)new Logger()).Log("Masdika");// Type casting expression
+            // Logger -> (cast explicit)ILogger -> Access Method
+
+
+            ILogger logger = new Logger();
+            logger.Log("Test");
 
         }
     }
@@ -90,6 +97,15 @@
             return total;
         }
 
+    }
+
+    // Default Interface
+    interface ILogger {
+        void Log(string text) => Console.WriteLine(text); // Default implementation
+    }
+
+    class Logger : ILogger {
+        // Doesnt implementng Log from ILogger
     }
 
 }

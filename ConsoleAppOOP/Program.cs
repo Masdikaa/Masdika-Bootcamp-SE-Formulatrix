@@ -116,6 +116,10 @@ namespace MainOOP {
                 Console.WriteLine("Animal4 is Dog");
             }
 
+            var rect = new Rectangle(3, 4);
+            (float width, float height) = rect; // Deconstruction call 
+            Console.WriteLine(width + " " + height);
+
         }
 
         // Polymorphism
