@@ -108,4 +108,17 @@
         // Doesnt implementng Log from ILogger
     }
 
+    public class Outer {
+
+        private static class PrivateInner { // Nested Private Class
+            public static void SayHi() {
+                Console.WriteLine("Whatsapp");
+            }
+        }
+
+        public static void CallInner() {
+            PrivateInner.SayHi();
+        }
+    }
+
 }
