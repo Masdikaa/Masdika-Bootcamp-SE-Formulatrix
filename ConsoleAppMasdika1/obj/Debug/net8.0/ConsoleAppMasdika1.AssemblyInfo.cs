@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ConsoleAppMasdika1")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+02cffe8d69854fc2c4e14762196f0d86efd78515")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+da8c0b0f6bc8602edc6dbe34aec8b865d1876e48")]
 [assembly: System.Reflection.AssemblyProductAttribute("ConsoleAppMasdika1")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ConsoleAppMasdika1")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

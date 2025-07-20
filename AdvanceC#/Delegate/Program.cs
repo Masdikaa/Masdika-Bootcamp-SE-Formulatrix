@@ -41,7 +41,7 @@ namespace DelegateExample {
             GenericDelegate();
             FuncDelegate();
             ActionDelegate();
-            DelegateComatibility();
+            DelegateCompatibility();
 
         }
 
@@ -122,7 +122,7 @@ namespace DelegateExample {
             Console.WriteLine($"Message : {Message}");
         }
 
-        public static void DelegateComatibility() {
+        public static void DelegateCompatibility() {
             D1 delegate1 = Method;
             // D2 delegate2 = delegate1; Error | tidak bisa di ubah secara implisit
             D2 delegate2 = new D2(delegate1); // object D2 baru yang membungkus D1, bisa karena D1 memilki kontrak yang sama
@@ -170,3 +170,28 @@ namespace DelegateExample {
 
     }
 }
+
+/*
+Rangkuman
+
+Delegate adalah sebuah variable yang memungkinkan untuk menyimpan referensi terhadap method yang memilki 
+return type dan parameter yang sama
+
+Delegate dapat mereferensikan lebih dari 1 method, dan jika delegate di invoke maka semua method akan
+dijalankan secara berurutan dari yang pertama kali di referensikan
+
+Delegate juga dapat memanggil method sebagai parameter untuk method lainya (higher order function)
+
+Delegate dapat melakukan multicast yang memungkinkan menambahkan beberapa method dalam 1 delagate, 
+dan jika delegate dipanggil maka akan memanggil method yang direferensikan ke dalam delegate secara berurutan 
+dari yang pertama kali di daftarkan
+
+Delegate juga dapat di deklarasikan menggunakan parameter placeholder/Generic delegate yang 
+memungkinkan untuk menggunakan jenis tipe data yang berbeda
+
+Func and Action adalah delegate generic yang disediakan dotnet untuk menggunakan delegate tanpa mendeklarasikan 
+delegate secara manual. func untuk method yang miliki return value dan action untuk method yang tidak memiliki return value atau void
+
+Delegate memliki safe implicit assignment yang memungkinkan untuk melakukan penugasan satu delegate ke dalam delegate lainya
+
+*/
