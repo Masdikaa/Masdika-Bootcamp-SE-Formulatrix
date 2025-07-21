@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+﻿using System.Xml;
 
 namespace ExceptionHandling {
     /* Exception Handling
@@ -15,6 +15,8 @@ namespace ExceptionHandling {
             ExceptionFilter();
             UsingStatementAndIDisposable();
             ThrowingException();
+            ReThrowingException();
+            TryXXX();
 
         }
 
@@ -168,5 +170,46 @@ namespace ExceptionHandling {
         value == "" ? "" :
         char.ToUpper(value[0]) + value.Substring(1);
 
+        public static void ReThrowingException() {
+
+            try {
+                // some risky operation
+            } catch (Exception ex) {
+                // Log the error: ex.Message, ex.StackTrace, etc.
+                Console.WriteLine($"Logged error: {ex.Message}");
+                throw; // Rethrows the ORIGINAL exception, preserving its stack trace
+                       // Melempar Exception yang asli 
+                       // throw ex; Melempar exception dan mereset stack trace
+
+                // Wrapping Exception
+                throw new XmlException("Format DateTime di dalam XML tidak valid.", ex); // ex sebagai parameter akan disimpan dalam inner Exception
+
+            }
+
+        }
+
+        public static void TryXXX() {
+            int number1 = int.Parse("123");
+
+            // CRASH dengan FormatException jika tidak ada try-catch
+            // int number2 = int.Parse("abc"); 
+
+            if (int.TryParse("123", out int result1)) {
+                // Blok ini berjalan karena parsing berhasil. 'result1' akan berisi 123.
+                Console.WriteLine($"Parsed: {result1}");
+            } else {
+                Console.WriteLine("Failed to parse 'abc'.");
+            }
+        }
+
     }
 }
+
+
+/*
+    Stacktrace : History runtutan pemanggilan method yang menyebabkan Exception : 
+    System.DivideByZeroException: Attempted to divide by zero.
+        at Program.MethodB() in C:\Users\YourUser\Project\Program.cs:line 20
+        at Program.MethodA() in C:\Users\YourUser\Project\Program.cs:line 14
+        at Program.Main() in C:\Users\YourUser\Project\Program.cs:line 8
+*/
