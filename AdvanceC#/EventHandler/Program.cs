@@ -73,12 +73,36 @@
               Mengirim pesan "Button successfully clicked" sebagai argumen ke HandleButtonClick
               Method HandleButtonClick dieksekusi, menerima pesan/argument tersebut ke dalam parameter message
             */
+
+            // Example from stock 
+            Stock teslaStock = new Stock("TSLA");
+            teslaStock.PriceChanged += Stock_PriceChanged; // Registering Stock_PriceChanged method
+
+            Console.WriteLine("Update Price!");
+            teslaStock.Price = 900.50m;
+
+            Console.WriteLine("Update Price!");
+            teslaStock.Price = 912.75m;
+
         }
 
         // Subscriber / Handler 
         static void HandleButtonClick(string message) {
             Console.WriteLine($"HANDLER : Receiving message from event \"{message}\"");
         }
+
+        // Subscriber from Stock
+        public static void Stock_PriceChanged(decimal oldPrice, decimal newPrice) {
+            if (newPrice > oldPrice) {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"Price increased from {oldPrice:C} to {newPrice:C}");
+            } else {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Price decreased from {oldPrice:C} to {newPrice:C}");
+            }
+            Console.ResetColor();
+        }
+
 
     }
 }
