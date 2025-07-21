@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delegate", "AdvanceC#\Deleg
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventHandler", "AdvanceC#\EventHandler\EventHandler.csproj", "{F30D9949-2601-4CE0-B110-B388F0B55FD1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TryStatementAndException", "AdvanceC#\TryStatementAndException\TryStatementAndException.csproj", "{37A3C8AA-9A6A-4FF7-B424-9972CB165973}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -155,6 +157,18 @@ Global
 		{F30D9949-2601-4CE0-B110-B388F0B55FD1}.Release|x64.Build.0 = Release|Any CPU
 		{F30D9949-2601-4CE0-B110-B388F0B55FD1}.Release|x86.ActiveCfg = Release|Any CPU
 		{F30D9949-2601-4CE0-B110-B388F0B55FD1}.Release|x86.Build.0 = Release|Any CPU
+		{37A3C8AA-9A6A-4FF7-B424-9972CB165973}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37A3C8AA-9A6A-4FF7-B424-9972CB165973}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37A3C8AA-9A6A-4FF7-B424-9972CB165973}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{37A3C8AA-9A6A-4FF7-B424-9972CB165973}.Debug|x64.Build.0 = Debug|Any CPU
+		{37A3C8AA-9A6A-4FF7-B424-9972CB165973}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{37A3C8AA-9A6A-4FF7-B424-9972CB165973}.Debug|x86.Build.0 = Debug|Any CPU
+		{37A3C8AA-9A6A-4FF7-B424-9972CB165973}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37A3C8AA-9A6A-4FF7-B424-9972CB165973}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37A3C8AA-9A6A-4FF7-B424-9972CB165973}.Release|x64.ActiveCfg = Release|Any CPU
+		{37A3C8AA-9A6A-4FF7-B424-9972CB165973}.Release|x64.Build.0 = Release|Any CPU
+		{37A3C8AA-9A6A-4FF7-B424-9972CB165973}.Release|x86.ActiveCfg = Release|Any CPU
+		{37A3C8AA-9A6A-4FF7-B424-9972CB165973}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -162,5 +176,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{C9756E13-ADFD-4C14-85EC-8001A79D7007} = {095789BD-A0A9-452A-B84A-DDEE46B14B95}
 		{F30D9949-2601-4CE0-B110-B388F0B55FD1} = {095789BD-A0A9-452A-B84A-DDEE46B14B95}
+		{37A3C8AA-9A6A-4FF7-B424-9972CB165973} = {095789BD-A0A9-452A-B84A-DDEE46B14B95}
 	EndGlobalSection
 EndGlobal
