@@ -20,6 +20,7 @@ Class member
 - The Named Operator
 
 */
+using System.Numerics;
 using Inheritance;
 
 namespace MainOOP {
@@ -120,6 +121,26 @@ namespace MainOOP {
             (float width, float height) = rect; // Deconstruction call 
             Console.WriteLine(width + " " + height);
 
+            // Date Time
+            DateTimeOffset dateTime = DateTime.Now;
+            Console.WriteLine(dateTime);
+
+            TimeSpan timeSpan1 = new TimeSpan(2, 30, 59);
+            TimeSpan timeSpan2 = new TimeSpan(1, 0, 0);
+            Console.WriteLine(timeSpan1 += timeSpan2);
+
+            TimeSpan ts = new TimeSpan(days: 10, hours: 12, minutes: 0, seconds: 0);
+            Console.WriteLine(ts);
+
+            // Parsing and TryParse
+            FormattingAndParsing();
+
+            // Random 
+            RandomExample();
+
+            // Enum 
+            EnumExample(Size.Large);
+
         }
 
         // Polymorphism
@@ -136,5 +157,90 @@ namespace MainOOP {
 
             return total;
         }
+
+        public static void FormattingAndParsing() {
+
+            // Parsing 
+            string booleanA = true.ToString();
+            bool booleanB = bool.Parse(booleanA);
+
+            Console.WriteLine(booleanA);
+            Console.WriteLine(booleanB);
+
+            // TryParse 
+            bool success = int.TryParse("100", out int result); // True
+            Console.WriteLine(success);
+
+            // Formatting Hex
+            string hex = 1982912.ToString("X"); // X besar untuk hexadecimal berformt besar(1E41C0) dan sebaliknya
+            Console.WriteLine(hex);
+
+            // Parsing Hex to Int
+            int thirty = Convert.ToInt32("FF5733", 16);
+            Console.WriteLine(thirty);
+
+            // Big Integer
+            BigInteger googol = BigInteger.Pow(10, 100); // 10^100
+            Console.WriteLine(googol);
+
+            // 16 Bit Float Type
+            Half half = (Half)12.345678f;
+            Console.WriteLine(half); // Output 12,34;
+
+            var random = new Random();
+            int a = (int)random.Next(20);
+            Console.WriteLine(a);
+
+        }
+
+        public static void RandomExample() {
+
+            // Bad
+            for (int i = 0; i < 5; i++) {
+                Random tempRandom = new Random(1);
+                Console.WriteLine("- " + tempRandom.Next(1, 100));
+            }
+
+            // Good
+            Random random = new Random(1);
+            for (int i = 0; i < 5; i++) {
+                Console.WriteLine("~ " + random.Next(1, 100));
+            }
+        }
+
+        public enum Size {
+            Small = 1,
+            Medium = 2,
+            Large = 3,
+        }
+
+        public static void EnumExample(Size size) {
+            switch (size) {
+                case Size.Small:
+                    Console.WriteLine("Small Size");
+                    break;
+                case Size.Medium:
+                    Console.WriteLine("Medium Size");
+                    break;
+                case Size.Large:
+                    Console.WriteLine("Large Size");
+                    break;
+                default:
+                    Console.WriteLine("Unknown Size");
+                    break;
+            }
+
+            // Enum to Integral
+            int index = (int)Size.Small;
+            Console.WriteLine($"{Size.Small} : {index}");
+
+            // Using Convert 
+            decimal en = Convert.ToDecimal(Size.Medium);
+
+            // Using ToString("D")
+            Console.WriteLine(Size.Large.ToString("D"));
+        }
+
+
     }
 }
