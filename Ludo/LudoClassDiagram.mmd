@@ -70,13 +70,17 @@ classDiagram
         <<delegate>>
     }
 
-    GameController --> Player : 
-    GameController --> Board : 
-    GameController --> Dice
-    GameController --> GameStateManager
+    GameController --> Player
+    %% GameController --> Board 
+    %% GameController --> Dice
+    %% GameController --> GameStateManager
+    GameController *-- Board
+    GameController *-- Dice
+    GameController *-- GameStateManager
     GameController --> GameEventHandler
-    Player --> Piece
+    %% Player --> Piece
+    Player --* Piece
     Piece --> Tile
-    Board --> Tile
+    Board *-- Tile
     Dice --> GameEventHandler
     GameStateManager --> IGameState
