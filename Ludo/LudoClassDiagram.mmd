@@ -1,0 +1,82 @@
+classDiagram
+    %% Control all games rules 
+    class GameController {
+        +List<Player> players
+        +Board board
+        +Dice dice
+        +GameStateManager stateManager
+        +StartGame()
+        +NextTurn()
+        +MovePiece(Player, Piece, int)
+        +CanExitBase(Player, Piece)
+        +CanCapture(Piece, Tile)
+        +IsSafeZone(Tile)
+        +CheckWin(Player)
+        +event OnPieceMoved
+        +event OnPlayerWin
+    }
+
+    %% Player identity and it pieces
+    class Player {
+        +string Name
+        +Color Color
+        +List<Piece> Pieces
+    }
+
+    %% Player Pieces State 
+    class Piece {
+        +Player Owner
+        +Tile CurrentTile
+        +bool IsAtBase
+        +bool IsInHome
+        +MoveTo(Tile)
+        +ResetToBase()
+    }
+
+    %% List tiles
+    class Board { 
+        +List<Tile> Tiles
+        +Tile GetStartTile(Player)
+        +Tile GetNextTile(Piece, int)
+        +List<Tile> GetHomePath(Player)
+    }
+
+
+    class Tile {
+        +int Position 
+        +bool IsSafeZone
+        +Color? TileColor 
+        +List<Piece> PiecesOnTile
+    }
+
+    class Dice {
+        +int Roll()
+        +event DiceRolledHandler OnDiceRolled
+    }
+
+    class GameStateManager {
+        +IGameState CurrentState
+        +ChangeState(IGameState newState)
+    }
+
+    class IGameState {
+        <<interface>>
+        +Enter()
+        +Execute()
+        +Exit()
+    }
+
+    class GameEventHandler {
+        <<delegate>>
+    }
+
+    GameController --> Player : 
+    GameController --> Board : 
+    GameController --> Dice
+    GameController --> GameStateManager
+    GameController --> GameEventHandler
+    Player --> Piece
+    Piece --> Tile
+    Board --> Tile
+    Dice --> GameEventHandler
+    GameStateManager --> IGameState

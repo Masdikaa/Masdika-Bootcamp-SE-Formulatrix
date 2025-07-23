@@ -1,0 +1,19 @@
+%% Namespace for ClassDiagram
+classDiagram   
+
+    %% Define Classes
+    class Animal {
+        + Age : Int
+        + Gender : String
+        + IsMammal() Boolean
+        + isMate() Boolean
+    }
+
+    class Fish {
+        - _sizeInFeet : Int
+        - _canEat : Boolean
+        - Swim() : void
+    } 
+
+%% Association
+Animal <|-- Fish
