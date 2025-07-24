@@ -1,19 +1,59 @@
 %% Namespace for ClassDiagram
-classDiagram   
+classDiagram
 
-    %% Define Classes
-    class Animal {
-        + Age : Int
-        + Gender : String
-        + IsMammal() Boolean
-        + isMate() Boolean
+    class GameController {
+        -List<Player> players
+        -Board board
+        
+        +event Action< > OnGameStarted
     }
 
-    class Fish {
-        - _sizeInFeet : Int
-        - _canEat : Boolean
-        - Swim() : void
-    } 
+    class Player{
+        -string Name
+        -Color Color
+    }
 
-%% Association
-Animal <|-- Fish
+    class Dice {
+        +Roll() int
+    }
+
+    class Board {
+
+    }
+
+    class Tiles {
+
+    }
+
+    class Pieces {
+
+    }
+
+    class Position{
+        <<record-struct>>
+        +int X
+        +int Y
+    }
+
+    class Color {
+        <<enumeration>>
+        Blue
+        Red
+        Green
+        Yellow
+    }
+
+    GameController "1" *-- "1" Board : own a
+    GameController "1" *-- "1" Dice : uses
+    GameController "1" o-- "2..4" Player : manages
+    Board "1" *-- "*" Tiles : contains 
+    Tiles --o Position 
+    Pieces o-- Color
+    Pieces --> GameController
+
+    %% %% Board own a Tile
+    %% Board *-- Tile
+    %% %% Tile Associate with Pieces
+    %% Tiles -> Pieces
+    %% %% Pieces has a Color
+    %% Pieces o-- Color

@@ -87,3 +87,16 @@ Yang akan menjadi class utama
 - Player memilki 4 Pieces
 - Board terdiri dari banyak Tile (Komposisi)
 - Piece berdiri di atas Tile (hubungan assosiasi)
+
+
+Revisi Class Diagram 
+- List on tiles
+- Enum (Color)
+- Event ( ex : OnGameStarted )
+- Interfacing Board, Player, Dice
+- Pieces and Color 
+- Hapus GameStateManager
+- NamingRule
+- Method dibikin public
+- Method game and rules dimasukin ke dalam GameController
+- Tiles & Board --> List/Array to Coordinating Position

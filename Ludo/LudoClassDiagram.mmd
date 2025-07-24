@@ -1,5 +1,4 @@
 classDiagram
-
     class GameController {
         -List<Player> players
         -Board board
@@ -12,8 +11,10 @@ classDiagram
         -CanCapture(Piece, Tile) bool
         -IsSafeZone(Tile) bool
         -CheckWin(Player) bool
-        +event PieceMovedHandler OnPieceMoved
-        +event PlayerWinHandler OnPlayerWin
+        %% Event Diganti 
+        %% Example OnGameStart -> Game dimulai, apa saja yang dijalankan 
+        +event Action<Piece, Tile> OnPieceMoved
+        +event Action<Player> OnPlayerWin
     }
 
     class Player {
@@ -31,7 +32,7 @@ classDiagram
         +ResetToBase()
     }
 
-    %% List tiles
+    %% Interfacing Board
     class Board { 
         -List<Tile> Tiles
         +GetStartTile(Player) Player
@@ -39,16 +40,18 @@ classDiagram
         +GetHomePath(Player) List<Tile>
     }
 
+    %% Struct Position
     class Tile {
-        -int Position 
+        -int Position
         -bool IsSafeZone
-        -Color? TileColor 
+        -Color? TileColor
         -List<Piece> PiecesOnTile
     }
 
     class Dice {
+        <<interface>>
         +Roll() int
-        +event DiceRolledHandler OnDiceRolled
+        %% +event Action<int> OnDiceRolled
     }
 
     class GameStateManager {
@@ -61,21 +64,6 @@ classDiagram
         +Enter()
         +Execute()
         +Exit()
-    }
-
-    class DiceRolledHandler {
-    <<delegate>>
-    +void(int result)
-    }
-
-    class PieceMovedHandler {
-        <<delegate>>
-        +void(Piece piece, Tile newTile)
-    }
-
-    class PlayerWinHandler {
-        <<delegate>>
-        +void(Player winner)
     }
 
     GameController "1" o-- "2..4" Player : manages
