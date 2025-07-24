@@ -1,61 +1,58 @@
 classDiagram
-    %% Control all games rules 
+
     class GameController {
-        +List<Player> players
-        +Board board
-        +Dice dice
-        +GameStateManager stateManager
+        -List<Player> players
+        -Board board
+        -Dice dice
+        -GameStateManager stateManager
         +StartGame()
         +NextTurn()
         +MovePiece(Player, Piece, int)
-        +CanExitBase(Player, Piece)
-        +CanCapture(Piece, Tile)
-        +IsSafeZone(Tile)
-        +CheckWin(Player)
-        +event OnPieceMoved
-        +event OnPlayerWin
+        -CanExitBase(Player, Piece) bool
+        -CanCapture(Piece, Tile) bool
+        -IsSafeZone(Tile) bool
+        -CheckWin(Player) bool
+        +event PieceMovedHandler OnPieceMoved
+        +event PlayerWinHandler OnPlayerWin
     }
 
-    %% Player identity and it pieces
     class Player {
-        +string Name
-        +Color Color
-        +List<Piece> Pieces
+        -string Name
+        -Color Color
+        -List<Piece> Pieces
     }
 
-    %% Player Pieces State 
     class Piece {
-        +Player Owner
-        +Tile CurrentTile
-        +bool IsAtBase
-        +bool IsInHome
+        -Player Owner
+        -Tile CurrentTile
+        -bool IsAtBase
+        -bool IsInHome
         +MoveTo(Tile)
         +ResetToBase()
     }
 
     %% List tiles
     class Board { 
-        +List<Tile> Tiles
-        +Tile GetStartTile(Player)
-        +Tile GetNextTile(Piece, int)
-        +List<Tile> GetHomePath(Player)
+        -List<Tile> Tiles
+        +GetStartTile(Player) Player
+        +GetNextTile(Piece, int) Tile
+        +GetHomePath(Player) List<Tile>
     }
 
-
     class Tile {
-        +int Position 
-        +bool IsSafeZone
-        +Color? TileColor 
-        +List<Piece> PiecesOnTile
+        -int Position 
+        -bool IsSafeZone
+        -Color? TileColor 
+        -List<Piece> PiecesOnTile
     }
 
     class Dice {
-        +int Roll()
+        +Roll() int
         +event DiceRolledHandler OnDiceRolled
     }
 
     class GameStateManager {
-        +IGameState CurrentState
+        -IGameState CurrentState
         +ChangeState(IGameState newState)
     }
 
@@ -66,21 +63,27 @@ classDiagram
         +Exit()
     }
 
-    class GameEventHandler {
-        <<delegate>>
+    class DiceRolledHandler {
+    <<delegate>>
+    +void(int result)
     }
 
-    GameController --> Player
-    %% GameController --> Board 
-    %% GameController --> Dice
-    %% GameController --> GameStateManager
-    GameController *-- Board
-    GameController *-- Dice
-    GameController *-- GameStateManager
-    GameController --> GameEventHandler
-    %% Player --> Piece
-    Player --* Piece
-    Piece --> Tile
-    Board *-- Tile
-    Dice --> GameEventHandler
-    GameStateManager --> IGameState
+    class PieceMovedHandler {
+        <<delegate>>
+        +void(Piece piece, Tile newTile)
+    }
+
+    class PlayerWinHandler {
+        <<delegate>>
+        +void(Player winner)
+    }
+
+    GameController "1" o-- "2..4" Player : manages
+    GameController "1" *-- "1" Board : has
+    GameController "1" *-- "1" Dice : uses
+    GameController "1" *-- "1" GameStateManager : controls
+    
+    Player "1" *-- "4" Piece : owns
+    Board "1" *-- "*" Tile : contains
+    Piece "*" -- "0..1" Tile : located_on
+    GameStateManager "1" --> "1" IGameState : currentState
