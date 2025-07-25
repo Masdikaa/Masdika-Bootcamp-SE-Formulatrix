@@ -1,12 +1,12 @@
 classDiagram
-    
+
     class GameController {
-        -List~Player~ _players
-        +SelectPlayer(Player)
+        -List~IPlayer~ _players
+        +GameController(IPlayer)
     }
 
     class IPlayer {
-        <<interface>>
+        <<Interface>>
         +string Name
         +Color Color
     }
@@ -18,15 +18,20 @@ classDiagram
     }
 
     class Color {
-        <<enumeration>>
-        +Blue
-        +Red
-        +Green
-        +Yellow
+        <<Enumeration>>
+        BLUE
+        RED
+        GREEN
+        YELLOW
+    }
+
+    class Board {
+
     }
 
     %% PlayerSection
     GameController --> Player : uses
-    Player ..|> IPlayer
+    Player ..|> IPlayer : realization
     Player --> Color : uses
 
+    
