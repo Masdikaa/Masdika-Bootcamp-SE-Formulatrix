@@ -1,59 +1,32 @@
-%% Namespace for ClassDiagram
 classDiagram
-
+    
     class GameController {
-        -List<Player> players
-        -Board board
-        
-        +event Action< > OnGameStarted
+        -List~Player~ _players
+        +SelectPlayer(Player)
     }
 
-    class Player{
-        -string Name
-        -Color Color
+    class IPlayer {
+        <<interface>>
+        +string Name
+        +Color Color
     }
 
-    class Dice {
-        +Roll() int
-    }
-
-    class Board {
-
-    }
-
-    class Tiles {
-
-    }
-
-    class Pieces {
-
-    }
-
-    class Position{
-        <<record-struct>>
-        +int X
-        +int Y
+    class Player {
+        +string Name
+        +Color Color
+        +Player(string, Color)
     }
 
     class Color {
         <<enumeration>>
-        Blue
-        Red
-        Green
-        Yellow
+        +Blue
+        +Red
+        +Green
+        +Yellow
     }
 
-    GameController "1" *-- "1" Board : own a
-    GameController "1" *-- "1" Dice : uses
-    GameController "1" o-- "2..4" Player : manages
-    Board "1" *-- "*" Tiles : contains 
-    Tiles --o Position 
-    Pieces o-- Color
-    Pieces --> GameController
+    %% PlayerSection
+    GameController --> Player : uses
+    Player ..|> IPlayer
+    Player --> Color : uses
 
-    %% %% Board own a Tile
-    %% Board *-- Tile
-    %% %% Tile Associate with Pieces
-    %% Tiles -> Pieces
-    %% %% Pieces has a Color
-    %% Pieces o-- Color
