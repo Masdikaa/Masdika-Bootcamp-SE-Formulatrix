@@ -2,7 +2,16 @@ classDiagram
 
     class GameController {
         -List~IPlayer~ _players
-        +GameController(IPlayer)
+        -IDice _dice
+        -int _currenTurnIndex
+        -IBoard _board
+
+        +GameController(IPlayer, IPlayer, IPlayer, IPlayer, IDice, IBoard)
+        +RollDice() int
+        +GetCurrentPlayer() Player
+        +NextTurn()
+        +MovePiece(Piece, int, int) bool
+
     }
 
     class IPlayer {
@@ -14,24 +23,90 @@ classDiagram
     class Player {
         +string Name
         +Color Color
+        +List~Piece~ Pieces
         +Player(string, Color)
     }
 
+    class Piece {
+        +int Id
+        +Color PieceColor
+        +Player PlayerOwner
+        +bool IsAtBase
+        +Piece(int, Color, Player)
+        +SetPosition(int, int)
+    }
+
+    class IDice {
+        +int Roll()
+    }
+
+    class Dice {
+        -Random _random
+        +Dice()
+        +Roll() int
+    }
+
+    class IBoard{
+        +int[,] Grid
+        +GetZoneType(int, int) ZoneType
+        +IsSafeZone(int, int) bool
+        +IsBlocked(int, int) bool
+    }
+
+    class Board{
+        +int[,] Grid
+        -Dictionary~Position, ZoneType~ zoneMap
+        +Board()
+        -InitializeZones()
+        +GetZoneType(int, int) ZoneType
+        +IsSafeZone(int, int) bool
+        +IsBlocked(int, int) bool
+    }
+
+    class Position {
+        <<struct>>
+        +int X
+        +int Y
+        +Position()
+    }
+
     class Color {
-        <<Enumeration>>
+        <<enumeration>>
         BLUE
         RED
         GREEN
         YELLOW
     }
 
-    class Board {
-
+    class ZoneType {
+        <<enumeration>>
+        Base
+        StartPoint
+        CommonPath
+        HomePath
+        HomePoint
+        SafeZone
+        BlockedPath
+        Empty
     }
+
+
 
     %% PlayerSection
     GameController *-- Player : uses
+    %% GameController *-- IPlayer : uses
     Player ..|> IPlayer : realization
     Player --> Color : uses
+    Player *-- Piece : owns
+    %% Piece --> Player : references
+    Piece --> Color : uses
+    Dice ..|> IDice : realization
+    GameController *-- Dice : uses
+    %% GameController *-- IDice : uses
+    Board ..|> IBoard : realization 
+    GameController *-- Board : uses
+    Piece --> Position : has
+    Board --> ZoneType : maps
+    Board --> Position : key
 
     
