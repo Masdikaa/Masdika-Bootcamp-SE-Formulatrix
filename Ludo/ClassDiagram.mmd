@@ -3,14 +3,23 @@ classDiagram
     class GameController {
         -List~IPlayer~ _players
         -IDice _dice
-        -int _currenTurnIndex
+        -int _currentTurnIndex
         -IBoard _board
+        %% Dictionary<Color, List<Position>>
+        -Dictionary~Color, List[Position]~ playerPaths
 
         +GameController(IPlayer, IPlayer, IPlayer, IPlayer, IDice, IBoard)
+        +StartGame()
         +RollDice() int
         +GetCurrentPlayer() Player
         +NextTurn()
+        +CanMove(Piece, int)
         +MovePiece(Piece, int, int) bool
+        +CheckWin(Player)
+        +CaptureIfExists()
+        +CanEnterFromBase(Piece, int) bool
+        +GetPathForPlayer(Color) List~Position~
+        +GetPiecePathIndex(Piece) int
 
     }
 
@@ -31,9 +40,9 @@ classDiagram
         +int Id
         +Color PieceColor
         +Player PlayerOwner
-        +bool IsAtBase
+        +PieceState State
+        +int StepIndex
         +Piece(int, Color, Player)
-        +SetPosition(int, int)
     }
 
     class IDice {
@@ -57,7 +66,7 @@ classDiagram
         +int[,] Grid
         -Dictionary~Position, ZoneType~ zoneMap
         +Board()
-        -InitializeZones()
+        +InitializeZones()
         +GetZoneType(int, int) ZoneType
         +IsSafeZone(int, int) bool
         +IsBlocked(int, int) bool
@@ -90,7 +99,11 @@ classDiagram
         Empty
     }
 
-
+    class PieceState{
+        AtBase
+        Active
+        Home
+    }
 
     %% PlayerSection
     GameController *-- Player : uses
@@ -108,5 +121,5 @@ classDiagram
     Piece --> Position : has
     Board --> ZoneType : maps
     Board --> Position : key
-
+    Piece --> PieceState
     
