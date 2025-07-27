@@ -1,51 +1,25 @@
 ﻿public class Program {
     public static void Main() {
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
 
         // Defines 4 player
         Player player1 = new Player("Satu", Color.Blue);
-        Player player2 = new Player("Satu", Color.Red);
-        Player player3 = new Player("Satu", Color.Green);
-        Player player4 = new Player("Satu", Color.Yellow);
+        Player player2 = new Player("Dua", Color.Red);
+        Player player3 = new Player("Tiga", Color.Green);
+        Player player4 = new Player("Empat", Color.Yellow);
 
         // Method call generate player
         GameController game = new GameController(player1, player2, player3, player4);
-        Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-        int[,] board = new int[15, 15];
+        Console.WriteLine($"Name : {player1.Name} - {player1.Color}");
+        Console.WriteLine($"Name : {player2.Name} - {player2.Color}");
+        Console.WriteLine($"Name : {player3.Name} - {player3.Color}");
+        Console.WriteLine($"Name : {player4.Name} - {player4.Color}");
 
-        // for (int i = 0; i < board.GetLength(0); i++) {
-        //     for (int j = 0; j < board.GetLength(1); j++) {
-        //         Console.Write($" ({i},{j}) ");
-        //     }
-        //     Console.WriteLine();
-        // }
-
-        for (int i = 0; i < board.GetLength(0); i++) {
-            for (int j = 0; j < board.GetLength(1); j++) {
-                if (i >= 0 && i <= 5 && j >= 0 && j <= 5) {
-                    // 🔴 Base Red
-                    Console.ForegroundColor = ConsoleColor.Red;
-                } else if (i >= 0 && i <= 5 && j >= 9 && j <= 14) {
-                    // 🟢 Base Green
-                    Console.ForegroundColor = ConsoleColor.Green;
-                } else if (i >= 9 && i <= 14 && j >= 0 && j <= 5) {
-                    // 🔵 Base Blue
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                } else if (i >= 9 && i <= 14 && j >= 9 && j <= 14) {
-                    // 🟡 base Yellow
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                } else {
-                    // ⚪ 
-                    Console.ResetColor();
-                }
-                Console.Write($" ({i},{j}) ");
-                // Console.Write(" 0 ");
-
-            }
-            Console.WriteLine();
-        }
-
-        Console.ResetColor();
+        Piece pieceP1 = player1.Pieces.FirstOrDefault(p => p.Id == 1);
+        Console.WriteLine($"Piece ID: {pieceP1.Id}");
+        Console.WriteLine($"Piece Color: {pieceP1.PieceColor}");
+        Console.WriteLine($"Owned by: {pieceP1.PieceOwner.Name}");
 
     }
 }
@@ -72,10 +46,27 @@ public interface IPlayer {
 public class Player : IPlayer {
     public string Name { get; set; }
     public Color Color { get; set; }
+    public List<Piece> Pieces { get; set; }
 
     public Player(string name, Color color) {
         Name = name;
         Color = color;
+        Pieces = new List<Piece>();
+        for (int i = 0; i < 4; i++) {
+            Pieces.Add(new Piece(i, color, this));
+        }
+    }
+}
+
+public class Piece {
+    public int Id { set; get; }
+    public Color PieceColor { set; get; }
+    public Player PieceOwner { set; get; }
+
+    public Piece(int id, Color pieceColor, Player pieceOwner) {
+        Id = id;
+        PieceColor = pieceColor;
+        PieceOwner = pieceOwner;
     }
 }
 
@@ -84,22 +75,4 @@ public enum Color {
     Red,
     Green,
     Yellow
-}
-
-public class Board {
-
-}
-
-public class Tile {
-
-}
-
-struct Position {
-    int X;
-    int Y;
-}
-
-public class Piece {
-    // Piece punya warna 
-    // Menempati lokasi pada board
 }

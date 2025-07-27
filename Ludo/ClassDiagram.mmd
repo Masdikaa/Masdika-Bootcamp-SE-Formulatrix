@@ -30,7 +30,7 @@ classDiagram
     }
 
     %% PlayerSection
-    GameController --> Player : uses
+    GameController *-- Player : uses
     Player ..|> IPlayer : realization
     Player --> Color : uses
 
