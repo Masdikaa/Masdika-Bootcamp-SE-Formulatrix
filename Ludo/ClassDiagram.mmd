@@ -7,6 +7,7 @@ classDiagram
         -IBoard _board
         %% Dictionary<Color, List<Position>>
         -Dictionary~Color, List[Position]~ playerPaths
+        -Dictionary~Player, Piece~ PiecesOnPlayer
 
         +GameController(IPlayer, IPlayer, IPlayer, IPlayer, IDice, IBoard)
         +StartGame()
@@ -20,7 +21,7 @@ classDiagram
         +CanEnterFromBase(Piece, int) bool
         +GetPathForPlayer(Color) List~Position~
         +GetPiecePathIndex(Piece) int
-
+        +event Action OnGameStart
     }
 
     class IPlayer {
@@ -63,7 +64,7 @@ classDiagram
     }
 
     class Board{
-        +int[,] Grid
+        +int[,] Grid    
         -Dictionary~Position, ZoneType~ zoneMap
         +Board()
         +InitializeZones()

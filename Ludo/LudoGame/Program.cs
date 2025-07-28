@@ -268,6 +268,11 @@ public enum Color {
     Yellow
 }
 
+// public interface Vehicle {
+//     string Username { set; get; }
+//     public string SetUsername()
+// }
+
 // 1. Membuat 4 Player
 // Setiap player memiliki nama dan warna (Color)
 // Setiap player otomatis memiliki 4 buah Piece
