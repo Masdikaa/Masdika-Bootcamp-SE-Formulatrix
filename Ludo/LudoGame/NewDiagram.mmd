@@ -1,0 +1,182 @@
+classDiagram
+
+    %% === GameController ===
+    class GameController {
+        -Dictionary<.IPlayer, List<.Piece>> _playerPieces
+        -IDice _dice
+        -List~IPlayer~ _players
+        -IBoard _board
+        -int _currentTurnIndex
+        -Dictionary<.Color, List <.Position>> _playerPaths
+        +event Action OnGameStart
+
+        +GameController(IPlayer, IPlayer, IPlayer, IPlayer, IDice, IBoard)
+        +StartGame()
+        +RollDice() int
+        +GetCurrentPlayer() Player
+        +NextTurn()
+        +CanMove(Piece, int)
+        +MovePiece(Piece, int, int) bool
+        +CheckWin(Player)
+        +CaptureIfExists()
+        +CanEnterFromBase(Piece, int) bool
+        +GetPathForPlayer(Color) List~Position~
+        +GetPiecePathIndex(Piece) int
+    }
+
+    %% === IPlayer & Player ===
+    class IPlayer {
+        <<Interface>>
+        +string Name
+        +Color Color
+    }
+
+    class Player {
+        +string Name
+        +Color Color
+        +Player(string, Color)
+    }
+
+    %% === Piece ===
+    class IPiece {
+        <<Interface>>
+        +Color PieceColor 
+        +IPlayer PlayerOwner 
+        +PieceState State
+        +int StepIndex
+    }
+
+    class Piece {
+        +Color PieceColor 
+        +IPlayer PlayerOwner 
+        +PieceState State
+        +int StepIndex
+        +Piece(int, Color, Player)
+    }
+
+    %% === IDice & Dice ===
+    class IDice {
+        <<Interface>>
+        +int Roll()
+    }
+
+    class Dice {
+        -Random _random
+        +Dice()
+        +int Roll()
+    }
+
+    %% === IBoard & Board ===
+    class IBoard {
+        <<Interface>>
+        +Piece?[,] Grid
+    }
+
+    class Board {
+        +Piece?[,] Grid 
+        +Board()
+    }
+
+    %% === Supporting Types ===
+    class Position {
+        <<record struct>>
+        +int X
+        +int Y
+        +Position(int, int)
+    }
+
+    class PieceState {
+        <<enumeration>>
+        AtBase
+        Active
+        Home
+    }
+
+    class ZoneType {
+        <<enumeration>>
+        Base
+        StartPoint
+        CommonPath
+        HomePath
+        HomePoint
+        SafeZone
+        BlockedPath
+        Empty
+    }
+
+    class Color {
+        <<enumeration>>
+        BLUE
+        RED
+        GREEN
+        YELLOW
+    }
+
+    %% GameController *-- IDice
+    %% GameController *-- IPlayer
+    %% GameController --> Piece
+    %% GameController *-- IBoard
+
+    %% IPlayer <|.. Player
+    %% IDice <|.. Dice
+    %% IBoard <|.. Board
+
+    %% Piece --> Color 
+    %% IPlayer *-- Color
+    %% Player *-- Color
+    
+    %% Board --> Piece
+    %% GameController --> Position
+    %% GameController --> ZoneType
+    %% GameController --> PieceState
+
+    %% Piece --> PieceState
+    %% IPiece <|.. Piece
+    %% GameController --> IPiece
+    %% IPiece -- IPlayer
+    %% IPlayer -- Piece
+
+    %% ========================
+
+    %% IPiece <|.. Piece
+    %% IDice <|.. Dice
+    %% IBoard <|.. Board
+    %% IPlayer <|.. Player
+
+    %% GameController *-- IDice
+    %% GameController *-- IPiece
+    %% GameController *-- IBoard
+    %% GameController *-- IPlayer
+
+    %% IPiece -- PieceState
+    %% Piece -- IBoard
+    %% GameController -- Color
+    %% IPlayer -- Color
+
+    %% GameController -- Position
+
+    %% === Relationships ===
+    
+    %% Implementation (Inheritance)
+    IPlayer <|-- Player
+    IPiece <|-- Piece
+    IDice <|-- Dice
+    IBoard <|-- Board
+
+    %% Aggregation (GameController "has-a" components)
+    GameController o-- "4" IPlayer : _players
+    GameController o-- "1" IDice : _dice
+    GameController o-- "1" IBoard : _board
+
+    %% Association & Dependency
+    GameController --> Piece : Manages
+    GameController ..> Position : Uses
+    GameController ..> Color : Uses
+    
+    Board o-- "0..*" Piece : Contains on Grid
+    
+    Piece o-- "1" IPlayer : PlayerOwner
+    Piece --> Color : PieceColor
+    Piece --> PieceState : State
+    
+    Player --> Color
