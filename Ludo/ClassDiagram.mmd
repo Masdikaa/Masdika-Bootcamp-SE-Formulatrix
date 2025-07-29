@@ -6,7 +6,7 @@ classDiagram
         -int _currentTurnIndex
         -IBoard _board
         %% Dictionary<Color, List<Position>>
-        -Dictionary~Color, List ~Position~~ playerPaths
+        -Dictionary~Color, List[Position]~ playerPaths
 
         +GameController(IPlayer, IPlayer, IPlayer, IPlayer, IDice, IBoard)
         +StartGame()
@@ -20,7 +20,7 @@ classDiagram
         +CanEnterFromBase(Piece, int) bool
         +GetPathForPlayer(Color) List~Position~
         +GetPiecePathIndex(Piece) int
-        +event Action OnGameStart
+
     }
 
     class IPlayer {
@@ -56,14 +56,14 @@ classDiagram
     }
 
     class IBoard{
-        +int[,] Grid 
+        +int[,] Grid
         +GetZoneType(int, int) ZoneType
         +IsSafeZone(int, int) bool
         +IsBlocked(int, int) bool
     }
 
     class Board{
-        +int[,] Grid = new Grid[15,15]
+        +int[,] Grid
         -Dictionary~Position, ZoneType~ zoneMap
         +Board()
         +InitializeZones()
@@ -105,13 +105,17 @@ classDiagram
         Home
     }
 
+    %% PlayerSection
     GameController *-- Player : uses
+    %% GameController *-- IPlayer : uses
     Player ..|> IPlayer : realization
     Player --> Color : uses
     Player *-- Piece : owns
+    %% Piece --> Player : references
     Piece --> Color : uses
     Dice ..|> IDice : realization
     GameController *-- Dice : uses
+    %% GameController *-- IDice : uses
     Board ..|> IBoard : realization 
     GameController *-- Board : uses
     Piece --> Position : has

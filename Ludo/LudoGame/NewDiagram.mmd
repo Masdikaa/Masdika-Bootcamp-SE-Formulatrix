@@ -2,12 +2,13 @@ classDiagram
 
     %% === GameController ===
     class GameController {
-        -Dictionary<.IPlayer, List<.Piece>> _playerPieces
+        -Dictionary<.IPlayer, List<.IPiece>> _playerPieces
+        -Dictionary<.Color, List <.Position>> _playerPaths
+        -Dictionary<Position, ZoneType> _zoneMap;
         -IDice _dice
         -List~IPlayer~ _players
         -IBoard _board
         -int _currentTurnIndex
-        -Dictionary<.Color, List <.Position>> _playerPaths
         +event Action OnGameStart
 
         +GameController(IPlayer, IPlayer, IPlayer, IPlayer, IDice, IBoard)
@@ -15,6 +16,7 @@ classDiagram
         +RollDice() int
         +GetCurrentPlayer() Player
         +NextTurn()
+        +ZoneType GetZoneTypeForPiece(Piece)
         +CanMove(Piece, int)
         +MovePiece(Piece, int, int) bool
         +CheckWin(Player)
@@ -112,71 +114,43 @@ classDiagram
         YELLOW
     }
 
-    %% GameController *-- IDice
-    %% GameController *-- IPlayer
-    %% GameController --> Piece
-    %% GameController *-- IBoard
+
+    %% GameController o-- Color
+    %% GameController o-- Position
+    %% GameController o-- ZoneType
 
     %% IPlayer <|.. Player
-    %% IDice <|.. Dice
-    %% IBoard <|.. Board
+    %% IBoard  <|.. Board
+    %% IPiece  <|.. Piece
+    %% IDice   <|.. Dice
 
-    %% Piece --> Color 
-    %% IPlayer *-- Color
-    %% Player *-- Color
-    
-    %% Board --> Piece
-    %% GameController --> Position
-    %% GameController --> ZoneType
-    %% GameController --> PieceState
+    %% GameController *.. IPlayer
+    %% GameController *.. IBoard
+    %% GameController *.. IDice
+    %% GameController *.. IPiece
 
-    %% Piece --> PieceState
-    %% IPiece <|.. Piece
-    %% GameController --> IPiece
-    %% IPiece -- IPlayer
-    %% IPlayer -- Piece
+    %% IPiece --> PieceState
 
-    %% ========================
+    %% Color <-- IPiece
 
-    %% IPiece <|.. Piece
-    %% IDice <|.. Dice
-    %% IBoard <|.. Board
-    %% IPlayer <|.. Player
+    GameController  *--  IDice : uses
+    GameController  *--  IBoard : uses
+    GameController  *--  IPlayer : aggregates
+    GameController  *--  IPiece : manages
+    GameController -- Position : uses
+    GameController -- ZoneType : uses
+    GameController -- Color : uses
+    GameController -- PieceState : uses
 
-    %% GameController *-- IDice
-    %% GameController *-- IPiece
-    %% GameController *-- IBoard
-    %% GameController *-- IPlayer
+    IPlayer <|-- Player : implements
+    Player -- Color : uses
 
-    %% IPiece -- PieceState
-    %% Piece -- IBoard
-    %% GameController -- Color
-    %% IPlayer -- Color
+    IPiece <|-- Piece : implements
+    IPiece -- IPlayer : associates with
+    IPiece -- Color : uses
+    IPiece -- PieceState : uses
 
-    %% GameController -- Position
+    IDice <|-- Dice : implements
 
-    %% === Relationships ===
-    
-    %% Implementation (Inheritance)
-    IPlayer <|-- Player
-    IPiece <|-- Piece
-    IDice <|-- Dice
-    IBoard <|-- Board
-
-    %% Aggregation (GameController "has-a" components)
-    GameController o-- "4" IPlayer : _players
-    GameController o-- "1" IDice : _dice
-    GameController o-- "1" IBoard : _board
-
-    %% Association & Dependency
-    GameController --> Piece : Manages
-    GameController ..> Position : Uses
-    GameController ..> Color : Uses
-    
-    Board o-- "0..*" Piece : Contains on Grid
-    
-    Piece o-- "1" IPlayer : PlayerOwner
-    Piece --> Color : PieceColor
-    Piece --> PieceState : State
-    
-    Player --> Color
+    IBoard <|-- Board : implements
+    IBoard *-- Piece : aggregates
