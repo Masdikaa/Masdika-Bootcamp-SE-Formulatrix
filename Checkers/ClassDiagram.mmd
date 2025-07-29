@@ -1,0 +1,103 @@
+classDiagram
+    class GameController {
+
+        -IBoard _board ✅
+        -List~IPlayer~ _players ✅
+        -int _currentPlayerIndex ✅
+        -Dictionary~IPlayer, List<.IPieces>~ _playerPieces ✅
+        +Action~Position,Position~ OnMoveExecuted
+        
+        + GameController(IBoard, IPlayer, IPlayer) 💫
+        + StartGame()
+        + HandleMove(Position, Position)
+        + CanMoveTo(Position, IBoard) bool
+        + GetPossibleMoves(IBoard) List~Position~
+        + EvaluateMove(Position, Position) bool
+        + GetCapturedPositions(Position, Position) List~Position~
+        + IsCapture(Position, Position) bool
+        + MovePiece(IPiece, Position)
+        + CapturePiece(Position, Position)
+        + HasForcedCaptures(IPlayer) bool      
+        + GetCaptureChain(Position, Position) List~Position~
+        + PromoteIfNeeded(IPiece)
+        + SwitchTurn()
+        + GetCurrentPlayer() IPlayer
+        + GetAllValidMoves(IPlayer) List~Position[]~
+        + IsGameOver() bool
+        + EndGame()
+
+    }
+    
+    %% class IBoard {
+    %%     +GetPiece(int, int): IPiece ✅
+    %%     +SetPiece(int, int, IPiece) ✅
+    %% }
+    
+    %% class Board {
+    %%     -IPiece[,] grid ✅
+    %%     +GetPiece(int, int): IPiece ✅
+    %%     +SetPiece(int, int, IPiece) ✅
+    %% }
+
+    class IBoard {
+        <<interface>>
+        +IPiece this(int, int) ✅
+    }
+
+    class Board {
+        -IPiece[,] _grid ✅
+        +IPiece this(int, int) ✅
+    }
+    
+    class IPlayer {
+        +PieceColor Color ✅
+        +string Name ✅
+    }
+    
+    class Player {
+        +PieceColor Color ✅
+        +string Name ✅
+    }
+    
+    class Position {
+        <<Record Struct>>
+        +int X ✅
+        +int Y ✅
+    }
+    
+    class IPiece {
+        +PieceColor Color ✅
+        +Position Position ✅
+        +PieceType Type ✅
+    }
+    
+    class Piece {
+        +PieceColor Color ✅
+        +Position Position ✅
+        +PieceType Type ✅
+    }
+    
+    class PieceType {
+        <<Enumeration>>
+        NORMAL ✅
+        KING ✅
+    }
+    
+    class PieceColor {
+        <<Enumeration>>
+        RED ✅
+        BLACK ✅
+    }
+
+    GameController --> IBoard
+    GameController --> IPlayer
+    GameController --> IPiece
+    GameController --> Position
+
+    IBoard <|-- Board
+    IPlayer <|-- Player
+    IPiece <|-- Piece
+    Piece <|-- PieceType
+    Piece <|-- PieceColor
+
+    Position --> IPiece
