@@ -1,4 +1,7 @@
-namespace Checkers;
+namespace Checkers.Models;
+
+using Checkers.Enums;
+using Checkers.Interfaces;
 
 public class Piece : IPiece {
     public PieceColor Color { get; set; }

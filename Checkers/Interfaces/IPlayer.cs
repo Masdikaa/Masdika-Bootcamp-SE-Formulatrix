@@ -1,6 +1,8 @@
-namespace Checkers;
+namespace Checkers.Interfaces;
 
-public class Player : IPlayer {
+using Checkers.Enums;
+
+public interface IPlayer {
     public PieceColor Color { set; get; }
     public string? Name { set; get; }
 }
