@@ -4,7 +4,7 @@ classDiagram
     class GameController {
         -Dictionary<.IPlayer, List<.IPiece>> _playerPieces
         -Dictionary<.Color, List <.Position>> _playerPaths
-        -Dictionary<Position, ZoneType> _zoneMap;
+        -Dictionary~Position, ZoneType~ _zoneMap;
         -IDice _dice
         -List~IPlayer~ _players
         -IBoard _board

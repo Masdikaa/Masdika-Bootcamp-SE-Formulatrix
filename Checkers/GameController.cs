@@ -92,6 +92,46 @@ public class GameController {
         }
     }
 
+    public List<Position> GetPossibleMoves(IPiece piece) {
+        var validMoves = new List<Position>();
+
+        if (piece == null) return validMoves;
+
+        int forwardDirection = (piece.Color == PieceColor.BLACK) ? 1 : -1;
+        int currentX = piece.Position.X;
+        int currentY = piece.Position.Y;
+
+        Position leftMove = new Position(currentX - 1, currentY + forwardDirection); // Depan kiri
+
+        // bool inBoardLeft = leftMove.X >= 0 && leftMove.X < _board.Size && leftMove.Y >= 0 && leftMove.Y < _board.Size;
+        // bool emptyForwardLeft = _board[leftMove.X, leftMove.Y] == null;
+
+        Position rightMove = new Position(currentX + 1, currentY + forwardDirection); // Depan kanan
+
+        // bool inBoardRight = rightMove.X >= 0 && rightMove.X < _board.Size && rightMove.Y >= 0 && rightMove.Y < _board.Size;
+        // bool emptyForwardRight = _board[rightMove.X, rightMove.Y] == null;
+
+        // if (inBoardLeft && emptyForwardLeft) validMoves.Add(leftMove);
+        // if (inBoardRight && emptyForwardRight) validMoves.Add(rightMove);
+
+        if (
+            leftMove.X >= 0 && leftMove.X < _board.Size &&
+            leftMove.Y >= 0 && leftMove.Y < _board.Size &&
+            _board[leftMove.X, leftMove.Y] == null
+        ) {
+            validMoves.Add(leftMove);
+        }
+
+        if (rightMove.X >= 0 && rightMove.X < _board.Size &&
+            rightMove.Y >= 0 && rightMove.Y < _board.Size &&
+            _board[rightMove.X, rightMove.Y] == null
+        ) {
+            validMoves.Add(rightMove);
+        }
+
+        return validMoves;
+    }
+
     public void Show() {
         Console.WriteLine("--- List Player ---");
         Console.WriteLine($"{_players[0].Name} is {_players[0].Color}");
@@ -114,6 +154,18 @@ public class GameController {
                 Console.WriteLine($"{++i}\tType: {piece.PieceType}, Position: ({piece.Position.X},{piece.Position.Y})");
             }
 
+            Console.WriteLine();
+        }
+    }
+
+    public void ShowBoardPosition() {
+        for (int y = 0; y < _board.Size; y++) {
+            for (int x = 0; x < _board.Size; x++) {
+                Console.Write($" [{x},{y}] ");
+                if (x < _board.Size - 1) {
+                    Console.Write("+");
+                }
+            }
             Console.WriteLine();
         }
     }

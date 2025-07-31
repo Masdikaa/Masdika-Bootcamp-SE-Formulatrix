@@ -16,6 +16,7 @@ public class Program {
         gc.Show();
         gc.ShowPlayerPieces();
 
+        // Simulating move piece
         Console.WriteLine("Select piece to move");
         Console.Write("Select X : ");
         int x = Convert.ToInt32(Console.ReadLine());
@@ -33,7 +34,6 @@ public class Program {
 
         bool moveSuccess = gc.HandleMove(startPosition, endPosition);
 
-        // 3. Cek hasilnya
         if (moveSuccess) {
             Console.WriteLine($"\nMoved piece from ({x},{y}) to ({xEnd},{yEnd})!");
             gc.ShowPlayerPieces();
@@ -41,6 +41,8 @@ public class Program {
             Console.WriteLine("\nFailed to move piece");
         }
 
+        // Board position
+        // gc.ShowBoardPosition();
     }
 
 }
