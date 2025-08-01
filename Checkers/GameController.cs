@@ -132,6 +132,26 @@ public class GameController {
         return validMoves;
     }
 
+    public Dictionary<IPiece, List<Position>> GetAllValidMovesForPlayer(IPlayer player) {
+        var allValidMoves = new Dictionary<IPiece, List<Position>>();
+
+        List<IPiece> playerPieces = _playerPieces[player]; // get all pieceis from _playerPieces
+
+        foreach (IPiece piece in playerPieces) {
+            // Possible move for each piece
+            var moves = GetPossibleMoves(piece);
+            if (moves.Count > 0) {
+                allValidMoves[piece] = moves;
+            }
+        }
+
+        return allValidMoves;
+    }
+
+    public IPlayer GetCurrentPlayer() { // current player
+        return _players[_currentPlayerIndex];
+    }
+
     public void Show() {
         Console.WriteLine("--- List Player ---");
         Console.WriteLine($"{_players[0].Name} is {_players[0].Color}");
