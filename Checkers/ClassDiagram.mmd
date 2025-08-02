@@ -1,28 +1,29 @@
 classDiagram
     class GameController {
 
-        -IBoard _board 
-        -List~IPlayer~ _players 
-        -int _currentPlayerIndex 
-        -Dictionary~IPlayer, List<.IPieces>~ _playerPieces 
+        -IBoard _board ✅
+        -List~IPlayer~ _players ✅
+        -int _currentPlayerIndex ✅
+        -Dictionary~IPlayer, List<.IPieces>~ _playerPieces ✅
         +Action~Position,Position~ OnMoveExecuted
         
-        + GameController(IBoard, IPlayer, IPlayer) 
+        + GameController(IBoard, IPlayer, IPlayer) ✅
+        + InitializeBoard(IBoard) ✅
         + StartGame()
-        + HandleMove(Position, Position)
-        + CanMoveTo(Position, IBoard) bool
-        + GetPossibleMoves(IBoard) List~Position~
+        + HandleMove(Position, Position) bool ✅
+        + MovePiece(IPiece, Position) ✅
+        + CanMoveTo(IPiece, Position) bool ✅
+        + GetPossibleMoves(IPiece) List~Position~ ✅
+        + GetAllValidMovesForPlayer(IPlayer) Dictionary~IPiece, List<.Position>~ ✅
         + EvaluateMove(Position, Position) bool
         + GetCapturedPositions(Position, Position) List~Position~
         + IsCapture(Position, Position) bool
-        + MovePiece(IPiece, Position)
         + CapturePiece(Position, Position)
         + HasForcedCaptures(IPlayer) bool      
         + GetCaptureChain(Position, Position) List~Position~
         + PromoteIfNeeded(IPiece)
-        + SwitchTurn()
-        + GetCurrentPlayer() IPlayer
-        + GetAllValidMoves(IPlayer) List~Position[]~
+        + SwitchTurn() ✅
+        + GetCurrentPlayer() IPlayer ✅
         + IsGameOver() bool
         + EndGame()
 
@@ -30,55 +31,57 @@ classDiagram
 
     class IBoard {
         <<interface>>
-        +int Size
-        +IPiece this(int, int)
+        +int Size ✅
+        +IPiece this(int, int) ✅
 
     }
 
     class Board {
-        -IPiece[,] _grid
-        +int Size
-        +IPiece this(int, int)
+        -IPiece[,] _grid ✅
+        +int Size ✅
+        +IPiece this(int, int) ✅
+        +Board(int) ✅
+        %% Board Constructor to define grid size
     }
     
     class IPlayer {
-        +PieceColor Color 
-        +string Name 
+        +PieceColor Color ✅
+        +string Name ✅
     }
     
     class Player {
-        +PieceColor Color 
-        +string Name 
+        +PieceColor Color ✅
+        +string Name ✅
     }
     
     class IPiece {
-        +PieceColor Color 
-        +Position Position 
-        +PieceType Type 
+        +PieceColor Color ✅
+        +Position Position ✅
+        +PieceType PieceType ✅
     }
     
     class Piece {
-        +PieceColor Color 
-        +Position Position 
-        +PieceType Type 
+        +PieceColor Color ✅
+        +Position Position ✅
+        +PieceType PieceType ✅
     }
     
     class Position {
         <<Record Struct>>
-        +int X 
-        +int Y 
+        +int X ✅
+        +int Y ✅
     }
 
     class PieceType {
         <<Enumeration>>
-        NORMAL 
-        KING 
+        NORMAL ✅
+        KING ✅
     }
     
     class PieceColor {
         <<Enumeration>>
-        RED 
-        BLACK 
+        RED ✅
+        BLACK ✅
     }
 
     GameController *-- IBoard

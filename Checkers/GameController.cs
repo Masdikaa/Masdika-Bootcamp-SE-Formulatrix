@@ -84,16 +84,31 @@ public class GameController {
         if (pieceToMove == null) {
             Console.WriteLine($"Error: Empty piece in ({from.X}, {from.Y}).");
             return false;
+        } else if (!CanMoveTo(pieceToMove, to)) {
+            Console.WriteLine($"Error: Move from ({from.X},{from.Y}) to ({to.X},{to.Y}) is invalid.");
+            return false;
         } else {
             Console.WriteLine($"Moving {pieceToMove.Color} from ({from.X},{from.Y}) to ({to.X},{to.Y})");
             MovePiece(pieceToMove, to);
+            SwitchTurn();
             return true;
-            // Switch Turn Here
         }
+        //  else {
+        //     Console.WriteLine($"Moving {pieceToMove.Color} from ({from.X},{from.Y}) to ({to.X},{to.Y})");
+        //     MovePiece(pieceToMove, to);
+        //     SwitchTurn();
+        //     return true;
+        // }
+    }
+
+    public bool CanMoveTo(IPiece piece, Position to) { // Validate, Hiding detail in Hanle Move
+        if (piece == null) return false;
+        List<Position> possibleMoves = GetPossibleMoves(piece);
+        return possibleMoves.Contains(to);
     }
 
     public List<Position> GetPossibleMoves(IPiece piece) {
-        var validMoves = new List<Position>();
+        List<Position> validMoves = new List<Position>();
 
         if (piece == null) return validMoves;
 
@@ -102,17 +117,7 @@ public class GameController {
         int currentY = piece.Position.Y;
 
         Position leftMove = new Position(currentX - 1, currentY + forwardDirection); // Depan kiri
-
-        // bool inBoardLeft = leftMove.X >= 0 && leftMove.X < _board.Size && leftMove.Y >= 0 && leftMove.Y < _board.Size;
-        // bool emptyForwardLeft = _board[leftMove.X, leftMove.Y] == null;
-
         Position rightMove = new Position(currentX + 1, currentY + forwardDirection); // Depan kanan
-
-        // bool inBoardRight = rightMove.X >= 0 && rightMove.X < _board.Size && rightMove.Y >= 0 && rightMove.Y < _board.Size;
-        // bool emptyForwardRight = _board[rightMove.X, rightMove.Y] == null;
-
-        // if (inBoardLeft && emptyForwardLeft) validMoves.Add(leftMove);
-        // if (inBoardRight && emptyForwardRight) validMoves.Add(rightMove);
 
         if (
             leftMove.X >= 0 && leftMove.X < _board.Size &&
@@ -133,13 +138,13 @@ public class GameController {
     }
 
     public Dictionary<IPiece, List<Position>> GetAllValidMovesForPlayer(IPlayer player) {
-        var allValidMoves = new Dictionary<IPiece, List<Position>>();
+        Dictionary<IPiece, List<Position>> allValidMoves = new Dictionary<IPiece, List<Position>>();
 
         List<IPiece> playerPieces = _playerPieces[player]; // get all pieceis from _playerPieces
 
         foreach (IPiece piece in playerPieces) {
             // Possible move for each piece
-            var moves = GetPossibleMoves(piece);
+            List<Position> moves = GetPossibleMoves(piece);
             if (moves.Count > 0) {
                 allValidMoves[piece] = moves;
             }
@@ -150,6 +155,10 @@ public class GameController {
 
     public IPlayer GetCurrentPlayer() { // current player
         return _players[_currentPlayerIndex];
+    }
+
+    private void SwitchTurn() {
+        _currentPlayerIndex = (_currentPlayerIndex + 1) % _players.Count;
     }
 
     public void Show() {
