@@ -14,8 +14,6 @@ public class GameController {
 
         _board = board;
         _players = [player1, player2];
-        // _players.Add(player1);
-        // _players = new List<IPlayer> { player1, player2 };
 
         _playerPieces = new Dictionary<IPlayer, List<IPiece>>();
         _playerPieces[player1] = new List<IPiece>();
@@ -88,17 +86,17 @@ public class GameController {
             Console.WriteLine($"Error: Move from ({from.X},{from.Y}) to ({to.X},{to.Y}) is invalid.");
             return false;
         } else {
+            if (IsCapture(from, to)) {
+                List<Position> capturedPositions = GetCapturedPositions(from, to);
+                foreach (Position pos in capturedPositions) {
+                    RemovePieceAt(pos);
+                }
+            }
             Console.WriteLine($"Moving {pieceToMove.Color} from ({from.X},{from.Y}) to ({to.X},{to.Y})");
             MovePiece(pieceToMove, to);
             SwitchTurn();
             return true;
         }
-        //  else {
-        //     Console.WriteLine($"Moving {pieceToMove.Color} from ({from.X},{from.Y}) to ({to.X},{to.Y})");
-        //     MovePiece(pieceToMove, to);
-        //     SwitchTurn();
-        //     return true;
-        // }
     }
 
     public bool CanMoveTo(IPiece piece, Position to) { // Validate, Hiding detail in Hanle Move
@@ -134,6 +132,40 @@ public class GameController {
             validMoves.Add(rightMove);
         }
 
+        // Capture kiri depan 
+        Position leftCapturePos = new Position(currentX - 2, currentY + (2 * forwardDirection)); // Posisi mendarat
+        Position leftMiddlePos = new Position(currentX - 1, currentY + forwardDirection); // Posisi bidak yang dicapture
+
+        if (
+            leftCapturePos.X >= 0 && leftCapturePos.X < _board.Size && // Apakah posisi mendarat dalam board
+            leftCapturePos.Y >= 0 && leftCapturePos.Y < _board.Size &&
+            leftMiddlePos.X >= 0 && leftMiddlePos.X < _board.Size &&   // Apakah posisi makanan didalam board
+            leftMiddlePos.Y >= 0 && leftMiddlePos.Y < _board.Size &&
+            _board[leftCapturePos.X, leftCapturePos.Y] == null
+        ) {
+            IPiece middlePiece = _board[leftMiddlePos.X, leftMiddlePos.Y]; // Ambil posisi dari piece yang akan dimakan
+            if (middlePiece != null && middlePiece.Color != piece.Color) {
+                validMoves.Add(leftCapturePos); // Jika posisi terdapat piece dan warnanya berbeda maka tambahkan dalam valid move
+            }
+        }
+
+        Position rightCapturePos = new Position(currentX + 2, currentY + (2 * forwardDirection));
+        Position rightMiddlePos = new Position(currentX + 1, currentY + forwardDirection);
+
+        if (
+            rightCapturePos.X >= 0 && rightCapturePos.X < _board.Size &&
+            rightCapturePos.Y >= 0 && rightCapturePos.Y < _board.Size &&
+            rightMiddlePos.X >= 0 && rightMiddlePos.X < _board.Size &&
+            rightMiddlePos.Y >= 0 && rightMiddlePos.Y < _board.Size &&
+            _board[rightCapturePos.X, rightCapturePos.Y] == null
+        ) {
+            IPiece middlePiece = _board[rightMiddlePos.X, rightMiddlePos.Y];
+            if (middlePiece != null && middlePiece.Color != piece.Color) {
+                validMoves.Add(rightCapturePos);
+            }
+        }
+
+
         return validMoves;
     }
 
@@ -153,6 +185,33 @@ public class GameController {
         return allValidMoves;
     }
 
+    public bool IsCapture(Position from, Position to) {
+        int deltaX = Math.Abs(to.X - from.X); // Hitung selisih dari posisi bidak ke 
+        int deltaY = Math.Abs(to.Y - from.Y);
+
+        return deltaX == 2 && deltaY == 2;
+    }
+
+    public List<Position> GetCapturedPositions(Position from, Position to) {
+        List<Position> capturedPositions = new List<Position>();
+        if (IsCapture(from, to)) {
+            int capturedX = (from.X + to.X) / 2;
+            int capturedY = (from.Y + to.Y) / 2;
+            capturedPositions.Add(new Position(capturedX, capturedY));
+        }
+        return capturedPositions;
+    }
+
+    public void RemovePieceAt(Position pos) {
+        IPiece capturedPiece = _board[pos.X, pos.Y];
+        if (capturedPiece != null) {
+            _board[pos.X, pos.Y] = null;
+            IPlayer owner = _players.First(p => p.Color == capturedPiece.Color);
+            _playerPieces[owner].Remove(capturedPiece);
+            Console.WriteLine($"{capturedPiece.Color} Piece in ({pos.X},{pos.Y}) has been captured!");
+        }
+    }
+
     public IPlayer GetCurrentPlayer() { // current player
         return _players[_currentPlayerIndex];
     }
@@ -160,6 +219,8 @@ public class GameController {
     private void SwitchTurn() {
         _currentPlayerIndex = (_currentPlayerIndex + 1) % _players.Count;
     }
+
+    //======================================================================================================================//
 
     public void Show() {
         Console.WriteLine("--- List Player ---");
@@ -206,5 +267,23 @@ public class GameController {
     _players : list dari player (2 player), get informasi player, mengatur giliran
     _currentPlayerIndex : penanda giliran, untuk SwitchTurn()
     _playerPieces : daftar piece dalam board, daripada scanning seluruh board
+*/
+
+/*
+    Capture brief
+    Method :
+    + IsCapture(Position from, Position to) bool -> Apakah gerakan dari posisi from ke to merupakan sebuah lompatan (capture)? boolean return
+    + GetCapturedPositions(Position from, Position to) List<Position> -> Jika sebuah gerakan adalah capture, method ini bertugas menemukan posisi bidak lawan yang dilompati. Mengembalikan sebuah List<Position> yang berisi posisi dari semua bidak yang di-capture dalam satu lompatan itu
+    + CapturePiece(Position from, Position to) -> Eksekusi capture dan menghapus bidak yang dicapture dari _board dan _playerPieces
+    + HasForcedCaptures(IPlayer) bool -> Menerapkan aturan "wajib makan". Method ini memeriksa seluruh papan untuk menjawab pertanyaan: "Apakah pemain ini memiliki setidaknya satu gerakan capture yang bisa dilakukan?"
+    + GetCaptureChain(Position from, Position to) List<Position> -> Menangani capture berantai (multi-jump). Jika setelah melakukan capture pertama, bidak tersebut mendarat di posisi di mana ia bisa melakukan capture lagi, method ini akan menemukan seluruh rangkaian lompatannya.
+
+    Alur Implementasi :
+    IsCapture(Position from, Position to)
+    Modifikasi GetPossibleMoves(IPiece piece) untuk mendeteksi gerakan lompatan
+    GetCapturedPositions(Position from, Position to) untuk mencari korban yang bisa dimakan 
+    CapturePiece(...) dan Modifikasi HandleMove(...) HandleMove untuk memanggil CapturePiece dan menghapus bidak yang di capture
+    HasForcedCaptures(IPlayer player) Menggunakan GetPossibleMoves yang sudah dimodifikasi untuk memeriksa semua bidak pemain. Dipanggil di setiap giliran jika hasilinya true
+    GetCaptureChain(...) (Opsional/Tingkat Lanjut)
 */
 

@@ -17,7 +17,7 @@ classDiagram
         + GetAllValidMovesForPlayer(IPlayer) Dictionary~IPiece, List<.Position>~ ✅
         + EvaluateMove(Position, Position) bool
         + GetCapturedPositions(Position, Position) List~Position~
-        + IsCapture(Position, Position) bool
+        + IsCapture(Position, Position) bool ✅
         + CapturePiece(Position, Position)
         + HasForcedCaptures(IPlayer) bool      
         + GetCaptureChain(Position, Position) List~Position~

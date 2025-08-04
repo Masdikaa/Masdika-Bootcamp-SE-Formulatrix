@@ -96,3 +96,10 @@ public class Program {
     }
 
 }
+
+/*
+    1,2 -> 2,3 Black
+    2,5 -> 1,4 Red
+    3,2 -> 4,3 Black
+    1,4 -> 3,2 Red Capture (2,3)
+*/
