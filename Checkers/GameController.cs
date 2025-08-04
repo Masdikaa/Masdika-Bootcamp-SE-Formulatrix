@@ -9,6 +9,8 @@ public class GameController {
     private readonly List<IPlayer> _players;
     private int _currentPlayerIndex = 0;
     private readonly Dictionary<IPlayer, List<IPiece>> _playerPieces;
+    public bool IsInCaptureChain { get; private set; }
+    public IPiece ChainingPiece { get; private set; }
 
     public GameController(IBoard board, IPlayer player1, IPlayer player2) {
 
@@ -19,7 +21,11 @@ public class GameController {
         _playerPieces[player1] = new List<IPiece>();
         _playerPieces[player2] = new List<IPiece>();
 
-        InitializeBoard(_board);
+        IsInCaptureChain = false;
+        ChainingPiece = null;
+
+        // InitializeBoard(_board);
+        InitializeForChainTest(_board);
 
         for (int y = 0; y < _board.Size; y++) { // Scanning 8x8 board
             for (int x = 0; x < _board.Size; x++) {
@@ -78,24 +84,36 @@ public class GameController {
     }
 
     public bool HandleMove(Position from, Position to) {
+        IsInCaptureChain = false;
+        ChainingPiece = null;
+
         IPiece pieceToMove = _board[from.X, from.Y];
-        if (pieceToMove == null) {
-            Console.WriteLine($"Error: Empty piece in ({from.X}, {from.Y}).");
-            return false;
-        } else if (!CanMoveTo(pieceToMove, to)) {
-            Console.WriteLine($"Error: Move from ({from.X},{from.Y}) to ({to.X},{to.Y}) is invalid.");
+        if (pieceToMove == null || !CanMoveTo(pieceToMove, to)) {
+            Console.WriteLine($"Error: Invalid move ({from.X}, {from.Y}).");
             return false;
         } else {
-            if (IsCapture(from, to)) {
-                // List<Position> capturedPositions = GetCapturedPositions(from, to);
-                // foreach (Position pos in capturedPositions) {
-                //     RemovePieceAt(pos);
-                // }
+
+            bool wasCapture = IsCapture(from, to);
+
+            if (wasCapture) {
                 CapturePiece(from, to);
             }
+
             Console.WriteLine($"Moving {pieceToMove.Color} from ({from.X},{from.Y}) to ({to.X},{to.Y})");
             MovePiece(pieceToMove, to);
-            SwitchTurn();
+
+            if (wasCapture) {
+                List<Position> chainMoves = GetCaptureChain(pieceToMove);
+                if (chainMoves.Count > 0) {
+                    IsInCaptureChain = true;
+                    ChainingPiece = pieceToMove;
+                } else {
+                    SwitchTurn();
+                }
+            } else {
+                SwitchTurn();
+            }
+
             return true;
         }
     }
@@ -217,6 +235,17 @@ public class GameController {
         return false;
     }
 
+    public List<Position> GetCaptureChain(IPiece piece) {
+        List<Position> possibleMoves = GetPossibleMoves(piece);
+        List<Position> captureChainMoves = new List<Position>();
+        foreach (var move in possibleMoves) {
+            if (IsCapture(piece.Position, move)) {
+                captureChainMoves.Add(move);
+            }
+        }
+        return captureChainMoves;
+    }
+
     public void CapturePiece(Position from, Position to) {
         List<Position> capturedPosition = GetCapturedPositions(from, to);
         foreach (Position pos in capturedPosition) {
@@ -278,6 +307,18 @@ public class GameController {
         }
     }
 
+    // Chain Capture Testing 
+    public void InitializeForChainTest(IBoard board) {
+        for (int y = 0; y < board.Size; y++)
+            for (int x = 0; x < board.Size; x++)
+                board[x, y] = null;
+
+        board[2, 1] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(2, 1) };
+        board[4, 3] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(4, 3) };
+        board[6, 5] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(6, 5) };
+        board[1, 0] = new Piece { Color = PieceColor.BLACK, PieceType = PieceType.NORMAL, Position = new Position(1, 0) };
+    }
+
 }
 
 /*
@@ -304,4 +345,3 @@ public class GameController {
     HasForcedCaptures(IPlayer player) Menggunakan GetPossibleMoves yang sudah dimodifikasi untuk memeriksa semua bidak pemain. Dipanggil di setiap giliran jika hasilinya true
     GetCaptureChain(...) (Opsional/Tingkat Lanjut)
 */
-

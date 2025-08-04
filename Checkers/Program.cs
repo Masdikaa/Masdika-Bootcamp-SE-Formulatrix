@@ -3,6 +3,7 @@
 using Checkers.Enums;
 using Checkers.Interfaces;
 using Checkers.Models;
+using System.Threading;
 
 public class Program {
 
@@ -22,6 +23,21 @@ public class Program {
             // 2. Tampilkan informasi giliran
             IPlayer currentPlayer = gc.GetCurrentPlayer();
             Console.WriteLine($"{currentPlayer.Name} Turn");
+
+            if (gc.IsInCaptureChain) {
+                Console.WriteLine("Executing capture chain...");
+                Thread.Sleep(700);
+
+                IPiece pieceToContinue = gc.ChainingPiece;
+                List<Position> chainMoves = gc.GetCaptureChain(pieceToContinue);
+
+                Position startPos = pieceToContinue.Position;
+                Position endPos = chainMoves[0];
+
+                gc.HandleMove(startPos, endPos);
+
+                continue;
+            }
 
             var availableMoves = gc.GetAllValidMovesForPlayer(currentPlayer);
             if (availableMoves.Count == 0) {
