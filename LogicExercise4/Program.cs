@@ -1,9 +1,12 @@
-﻿namespace LogicExercise;
+﻿using System.Data.Common;
+using System.Reflection.Metadata;
+
+namespace LogicExercise;
 
 public class Program() {
     public static void Main() {
-
     }
+
 }
 
 public class Logic {

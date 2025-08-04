@@ -7,6 +7,7 @@ using Checkers.Models;
 public class Program {
 
     public static void Main() {
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
 
         IBoard board = new Board(8);
         IPlayer player1 = new Player { Color = PieceColor.BLACK, Name = "Player 1" };
@@ -14,85 +15,118 @@ public class Program {
 
         GameController gc = new GameController(board, player1, player2);
 
-        // --- Game Loop Utama ---
         while (true) {
-            Console.WriteLine("\n=============================================");
+            // 1. TAMPILKAN PAPAN PERMAINAN
+            ShowBoard(board);
 
+            // 2. Tampilkan informasi giliran
             IPlayer currentPlayer = gc.GetCurrentPlayer();
-            Console.WriteLine($"Turn: {currentPlayer.Name}");
+            Console.WriteLine($"{currentPlayer.Name} Turn");
 
             var availableMoves = gc.GetAllValidMovesForPlayer(currentPlayer);
-
-            // Jika tidak ada gerakan yang tersedia, permainan berakhir
             if (availableMoves.Count == 0) {
-                Console.WriteLine("No valid moves");
+                Console.WriteLine("No move avaible! You Lose 🫵🏻😹");
                 break;
             }
 
-            // 2. Tampilkan daftar bidak yang bisa digerakkan
-            Console.WriteLine("Piece to move:");
+            bool mustCapture = gc.HasForcedCaptures(currentPlayer);
+            Dictionary<IPiece, List<Position>> movesToShow;
+
+            if (mustCapture) {
+                Console.WriteLine("ATTENTION: You must make a capture!");
+                movesToShow = new Dictionary<IPiece, List<Position>>();
+
+                // Langkah 2: Saring 'availableMoves' dan hanya ambil yang merupakan capture.
+                foreach (var moveEntry in availableMoves) {
+                    IPiece piece = moveEntry.Key;
+                    List<Position> captureDestinations = new List<Position>();
+
+                    foreach (Position dest in moveEntry.Value) {
+                        if (gc.IsCapture(piece.Position, dest)) {
+                            captureDestinations.Add(dest);
+                        }
+                    }
+
+                    if (captureDestinations.Count > 0) {
+                        movesToShow[piece] = captureDestinations;
+                    }
+                }
+            } else {
+                // Langkah 3: Jika tidak ada capture, tampilkan semua gerakan seperti biasa.
+                movesToShow = availableMoves;
+            }
+
+            Console.WriteLine("Pieces to move:");
             int index = 1;
-            // Membuat list sementara untuk memudahkan pemilihan berdasarkan nomor
-            var movablePieces = availableMoves.Keys.ToList();
+            var movablePieces = movesToShow.Keys.ToList();
             foreach (var piece in movablePieces) {
                 Console.WriteLine($"{index++}. Piece in ({piece.Position.X}, {piece.Position.Y})");
             }
 
-            // 3. Minta pemain memilih bidak
-            Console.Write("Choose the number of piece to move: ");
+            Console.Write("Select the number of piece: ");
             int choice = Convert.ToInt32(Console.ReadLine());
             IPiece selectedPiece = movablePieces[choice - 1];
 
-            // 4. Tampilkan daftar tujuan yang valid untuk bidak yang dipilih
-            List<Position> destinations = availableMoves[selectedPiece];
-            Console.WriteLine($"\nPiece ({selectedPiece.Position.X}, {selectedPiece.Position.Y}) possible move:");
+            List<Position> destinations = movesToShow[selectedPiece];
+            Console.WriteLine($"\nPiece in ({selectedPiece.Position.X}, {selectedPiece.Position.Y}) valid move:");
             index = 1;
             foreach (var pos in destinations) {
                 Console.WriteLine($"{index++}. ({pos.X}, {pos.Y})");
             }
 
-            // 5. Minta pemain memilih tujuan
-            Console.Write("Select valid move: ");
+            Console.Write("Select target position: ");
             choice = Convert.ToInt32(Console.ReadLine());
             Position selectedDestination = destinations[choice - 1];
 
-            // 6. Eksekusi gerakan
+            // 3. Eksekusi gerakan
             gc.HandleMove(selectedPiece.Position, selectedDestination);
-
-            // Tampilkan keadaan papan setelah bergerak (opsional)
-            gc.ShowPlayerPieces();
         }
 
-        // gc.Show();
-        // gc.ShowPlayerPieces();
+    }
 
-        // // Simulating move piece
-        // Console.WriteLine("Select piece to move");
-        // Console.Write("Select X : ");
-        // int x = Convert.ToInt32(Console.ReadLine());
-        // Console.Write("Select Y : ");
-        // int y = Convert.ToInt32(Console.ReadLine());
+    static void ShowBoard(IBoard board) {
+        string darkSquareBg = "\x1b[48;2;191;146;100m";     // #BF9264 background
+        string lightSquareBg = "\x1b[48;2;248;244;225m";    // #F8F4E1 background
+        string blackPieceFg = "\x1b[38;2;0;0;0m";           // Black Pieces foreground
+        string redPieceFg = "\x1b[38;2;255;0;0m";           // Red Pieces foreground
+        string resetColor = "\x1b[0m";                      // Default
 
-        // Console.WriteLine($"Move piece ({x},{y}) to ?");
-        // Console.Write("Select X : ");
-        // int xEnd = Convert.ToInt32(Console.ReadLine());
-        // Console.Write("Select Y : ");
-        // int yEnd = Convert.ToInt32(Console.ReadLine());
+        Console.Clear();
 
-        // Position startPosition = new Position(x, y);
-        // Position endPosition = new Position(xEnd, yEnd);
+        Console.Write("   ");
+        for (int col = 0; col < board.Size; col++) {
+            Console.Write($" {col} ");
+        }
+        Console.WriteLine("\n");
 
-        // bool moveSuccess = gc.HandleMove(startPosition, endPosition);
+        for (int y = 0; y < board.Size; y++) {
+            Console.Write($" {y} ");
+            for (int x = 0; x < board.Size; x++) {
+                string bgColor = ((x + y) % 2 != 0) ? darkSquareBg : lightSquareBg;
+                Console.Write(bgColor);
+                IPiece piece = board[x, y];
+                if (piece == null) {
+                    Console.Write("   "); // Empty Piece
+                } else {
+                    if (piece.Color == PieceColor.BLACK) {
+                        Console.Write(blackPieceFg);
+                        // Char for king ✪
+                        Console.Write(" ● ");
+                    } else {
+                        Console.Write(redPieceFg);
+                        Console.Write(" ● ");
+                    }
+                }
+                Console.Write(resetColor);
+            }
+            Console.WriteLine($" {y} ");
+        }
 
-        // if (moveSuccess) {
-        //     Console.WriteLine($"\nMoved piece from ({x},{y}) to ({xEnd},{yEnd})!");
-        //     gc.ShowPlayerPieces();
-        // } else {
-        //     Console.WriteLine("\nFailed to move piece");
-        // }
-
-        // Board position
-        // gc.ShowBoardPosition();
+        Console.Write("\n   ");
+        for (int col = 0; col < board.Size; col++) {
+            Console.Write($" {col} ");
+        }
+        Console.WriteLine("\n");
     }
 
 }

@@ -16,10 +16,10 @@ classDiagram
         + GetPossibleMoves(IPiece) List~Position~ ✅
         + GetAllValidMovesForPlayer(IPlayer) Dictionary~IPiece, List<.Position>~ ✅
         + EvaluateMove(Position, Position) bool
-        + GetCapturedPositions(Position, Position) List~Position~
+        + GetCapturedPositions(Position, Position) List~Position~ ✅
         + IsCapture(Position, Position) bool ✅
-        + CapturePiece(Position, Position)
-        + HasForcedCaptures(IPlayer) bool      
+        + CapturePiece(Position, Position) ✅
+        + HasForcedCaptures(IPlayer) bool 
         + GetCaptureChain(Position, Position) List~Position~
         + PromoteIfNeeded(IPiece)
         + SwitchTurn() ✅

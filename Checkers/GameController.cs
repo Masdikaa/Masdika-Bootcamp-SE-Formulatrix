@@ -87,10 +87,11 @@ public class GameController {
             return false;
         } else {
             if (IsCapture(from, to)) {
-                List<Position> capturedPositions = GetCapturedPositions(from, to);
-                foreach (Position pos in capturedPositions) {
-                    RemovePieceAt(pos);
-                }
+                // List<Position> capturedPositions = GetCapturedPositions(from, to);
+                // foreach (Position pos in capturedPositions) {
+                //     RemovePieceAt(pos);
+                // }
+                CapturePiece(from, to);
             }
             Console.WriteLine($"Moving {pieceToMove.Color} from ({from.X},{from.Y}) to ({to.X},{to.Y})");
             MovePiece(pieceToMove, to);
@@ -202,13 +203,30 @@ public class GameController {
         return capturedPositions;
     }
 
-    public void RemovePieceAt(Position pos) {
-        IPiece capturedPiece = _board[pos.X, pos.Y];
-        if (capturedPiece != null) {
-            _board[pos.X, pos.Y] = null;
-            IPlayer owner = _players.First(p => p.Color == capturedPiece.Color);
-            _playerPieces[owner].Remove(capturedPiece);
-            Console.WriteLine($"{capturedPiece.Color} Piece in ({pos.X},{pos.Y}) has been captured!");
+    public bool HasForcedCaptures(IPlayer player) {
+        Dictionary<IPiece, List<Position>> allPlayerMoves = GetAllValidMovesForPlayer(player);
+        foreach (var moveEntry in allPlayerMoves) {
+            IPiece piece = moveEntry.Key;
+            List<Position> destinations = moveEntry.Value;
+            foreach (Position to in destinations) {
+                if (IsCapture(piece.Position, to)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void CapturePiece(Position from, Position to) {
+        List<Position> capturedPosition = GetCapturedPositions(from, to);
+        foreach (Position pos in capturedPosition) {
+            IPiece capturedPiece = _board[pos.X, pos.Y];
+            if (capturedPiece != null) {
+                _board[pos.X, pos.Y] = null; // Remove piece from board
+                IPlayer owner = _players.First(p => p.Color == capturedPiece.Color);
+                _playerPieces[owner].Remove(capturedPiece);
+                Console.WriteLine($"{capturedPiece.Color} Piece in ({pos.X},{pos.Y}) has been captured!");
+            }
         }
     }
 
