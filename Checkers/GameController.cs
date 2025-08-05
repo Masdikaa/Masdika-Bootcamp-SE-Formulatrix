@@ -305,11 +305,11 @@ public class GameController {
 
         Console.WriteLine("\n===========================================");
         Console.WriteLine("               GAME OVER!                  ");
-        Console.WriteLine($"       {winner.Name} is the Winner        ");
+        Console.WriteLine($"           {winner.Color} is the Winner   ");
         Console.WriteLine("===========================================");
     }
 
-    //======================================================================================================================//
+    // ====================================================================================================================== //
 
     public void Show() {
         Console.WriteLine("--- List Player ---");
@@ -366,8 +366,14 @@ public class GameController {
             for (int x = 0; x < board.Size; x++)
                 board[x, y] = null;
 
-        board[0, 3] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(0, 3) };
-        board[7, 4] = new Piece { Color = PieceColor.BLACK, PieceType = PieceType.NORMAL, Position = new Position(7, 4) };
+        board[4, 1] = new Piece { Color = PieceColor.BLACK, PieceType = PieceType.NORMAL, Position = new Position(4, 1) };
+        board[5, 2] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(5, 2) };
+        board[5, 4] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(5, 4) };
+        board[3, 6] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(3, 6) };
+        board[1, 6] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(1, 6) };
+        board[1, 4] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(1, 4) };
+        board[3, 2] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(3, 2) };
+
     }
 
 }

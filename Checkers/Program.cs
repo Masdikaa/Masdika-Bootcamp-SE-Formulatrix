@@ -17,12 +17,10 @@ public class Program {
         GameController gc = new GameController(board, player1, player2);
 
         while (true) {
-            // 1. TAMPILKAN PAPAN PERMAINAN
-            ShowBoard(board);
+            DisplayBoard(board, null);
 
-            // 2. Tampilkan informasi giliran
             IPlayer currentPlayer = gc.GetCurrentPlayer();
-            Console.WriteLine($"{currentPlayer.Name} Turn");
+            Console.WriteLine($"{currentPlayer.Name} {currentPlayer.Color} Turn");
 
             if (gc.IsGameOver()) {
                 break;
@@ -37,7 +35,6 @@ public class Program {
 
                 Position startPos = pieceToContinue.Position;
                 Position endPos = chainMoves[0];
-
                 gc.HandleMove(startPos, endPos);
 
                 continue;
@@ -53,10 +50,9 @@ public class Program {
             Dictionary<IPiece, List<Position>> movesToShow;
 
             if (mustCapture) {
-                Console.WriteLine("ATTENTION: You must make a capture!");
+                // Console.WriteLine("ATTENTION: You must make a capture!");
                 movesToShow = new Dictionary<IPiece, List<Position>>();
 
-                // Langkah 2: Saring 'availableMoves' dan hanya ambil yang merupakan capture.
                 foreach (var moveEntry in availableMoves) {
                     IPiece piece = moveEntry.Key;
                     List<Position> captureDestinations = new List<Position>();
@@ -72,7 +68,6 @@ public class Program {
                     }
                 }
             } else {
-                // Langkah 3: Jika tidak ada capture, tampilkan semua gerakan seperti biasa.
                 movesToShow = availableMoves;
             }
 
@@ -83,22 +78,37 @@ public class Program {
                 Console.WriteLine($"{index++}. Piece in ({piece.Position.X}, {piece.Position.Y})");
             }
 
-            Console.Write("Select the number of piece: ");
-            int choice = Convert.ToInt32(Console.ReadLine());
-            IPiece selectedPiece = movablePieces[choice - 1];
-
+            IPiece selectedPiece;
+            while (true) {
+                Console.Write("Select the number of piece: ");
+                string input = Console.ReadLine();
+                if (int.TryParse(input, out int choice)) {
+                    if (choice >= 1 && choice <= movablePieces.Count) {
+                        selectedPiece = movablePieces[choice - 1];
+                        break;
+                    }
+                }
+                Console.WriteLine($"Invalid input. Please enter a number between 1 and {movablePieces.Count}.");
+            }
             List<Position> destinations = movesToShow[selectedPiece];
-            Console.WriteLine($"\nPiece in ({selectedPiece.Position.X}, {selectedPiece.Position.Y}) valid move:");
-            index = 1;
-            foreach (var pos in destinations) {
-                Console.WriteLine($"{index++}. ({pos.X}, {pos.Y})");
+
+            // Drawboard
+            DisplayBoard(board, destinations);
+            Console.WriteLine($"{currentPlayer.Name} Turn");
+            Console.WriteLine($"Selected piece at ({selectedPiece.Position.X}, {selectedPiece.Position.Y}).");
+
+            Position selectedDestination;
+            while (true) {
+                Console.Write("Select the number of the target position: ");
+                string input = Console.ReadLine();
+                if (int.TryParse(input, out int destChoice) && destChoice >= 1 && destChoice <= destinations.Count) {
+                    selectedDestination = destinations[destChoice - 1];
+                    break;
+                } else {
+                    Console.WriteLine("Invalid Input");
+                }
             }
 
-            Console.Write("Select target position: ");
-            choice = Convert.ToInt32(Console.ReadLine());
-            Position selectedDestination = destinations[choice - 1];
-
-            // 3. Eksekusi gerakan
             gc.HandleMove(selectedPiece.Position, selectedDestination);
         }
 
@@ -106,8 +116,11 @@ public class Program {
 
     }
 
-    static void ShowBoard(IBoard board) {
+    static void DisplayBoard(IBoard board, List<Position> highlightedSquares) {
+
         string darkSquareBg = "\x1b[48;2;191;146;100m";     // #BF9264 background
+        string validSquareBg = "\x1b[48;2;149;76;46m";      // BG Possible Moves #954C2E
+        string validSquareFg = "\x1b[48;2;59;6;10m";        // #3B060A 
         string lightSquareBg = "\x1b[48;2;248;244;225m";    // #F8F4E1 background
         string blackPieceFg = "\x1b[38;2;0;0;0m";           // Black Pieces foreground
         string redPieceFg = "\x1b[38;2;255;0;0m";           // Red Pieces foreground
@@ -124,18 +137,34 @@ public class Program {
         for (int y = 0; y < board.Size; y++) {
             Console.Write($" {y} ");
             for (int x = 0; x < board.Size; x++) {
-                string bgColor = ((x + y) % 2 != 0) ? darkSquareBg : lightSquareBg;
-                Console.Write(bgColor);
-                IPiece piece = board[x, y];
-                if (piece == null) {
-                    Console.Write("   "); // Empty Piece
+                Position currentPos = new Position(x, y);
+                string bgColor;
+                bool isHighlighted = highlightedSquares != null && highlightedSquares.Contains(currentPos);
+
+                if (isHighlighted) {
+                    bgColor = validSquareBg;
                 } else {
-                    if (piece.Color == PieceColor.BLACK) {
-                        Console.Write(blackPieceFg);
-                        Console.Write(piece.PieceType == PieceType.KING ? " ✪ " : " ● ");
+                    bgColor = ((x + y) % 2 != 0) ? darkSquareBg : lightSquareBg;
+                }
+
+                Console.Write(bgColor);
+
+                if (isHighlighted) {
+                    int moveIndex = highlightedSquares.IndexOf(currentPos) + 1;
+                    Console.Write(validSquareFg);
+                    Console.Write($" {moveIndex} ");
+                } else {
+                    IPiece selectedPiece = board[x, y];
+                    if (selectedPiece == null) {
+                        Console.Write("   ");
                     } else {
-                        Console.Write(redPieceFg);
-                        Console.Write(piece.PieceType == PieceType.KING ? " ✪ " : " ● ");
+                        if (selectedPiece.Color == PieceColor.BLACK) {
+                            Console.Write(blackPieceFg);
+                            Console.Write(selectedPiece.PieceType == PieceType.KING ? " ✪ " : " ● ");
+                        } else {
+                            Console.Write(redPieceFg);
+                            Console.Write(selectedPiece.PieceType == PieceType.KING ? " ✪ " : " ● ");
+                        }
                     }
                 }
                 Console.Write(resetColor);
