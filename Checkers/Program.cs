@@ -24,6 +24,10 @@ public class Program {
             IPlayer currentPlayer = gc.GetCurrentPlayer();
             Console.WriteLine($"{currentPlayer.Name} Turn");
 
+            if (gc.IsGameOver()) {
+                break;
+            }
+
             if (gc.IsInCaptureChain) {
                 Console.WriteLine("Executing capture chain...");
                 Thread.Sleep(700);
@@ -98,6 +102,8 @@ public class Program {
             gc.HandleMove(selectedPiece.Position, selectedDestination);
         }
 
+        gc.EndGame();
+
     }
 
     static void ShowBoard(IBoard board) {
@@ -126,11 +132,10 @@ public class Program {
                 } else {
                     if (piece.Color == PieceColor.BLACK) {
                         Console.Write(blackPieceFg);
-                        // Char for king ✪
-                        Console.Write(" ● ");
+                        Console.Write(piece.PieceType == PieceType.KING ? " ✪ " : " ● ");
                     } else {
                         Console.Write(redPieceFg);
-                        Console.Write(" ● ");
+                        Console.Write(piece.PieceType == PieceType.KING ? " ✪ " : " ● ");
                     }
                 }
                 Console.Write(resetColor);

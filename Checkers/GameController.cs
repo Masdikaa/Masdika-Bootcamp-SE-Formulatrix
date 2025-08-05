@@ -24,8 +24,9 @@ public class GameController {
         IsInCaptureChain = false;
         ChainingPiece = null;
 
-        // InitializeBoard(_board);
-        InitializeForChainTest(_board);
+        InitializeBoard(_board); // USE THIS
+        // InitializeForChainTest(_board);
+        // InitializeKingTest(_board);
 
         for (int y = 0; y < _board.Size; y++) { // Scanning 8x8 board
             for (int x = 0; x < _board.Size; x++) {
@@ -101,6 +102,7 @@ public class GameController {
 
             Console.WriteLine($"Moving {pieceToMove.Color} from ({from.X},{from.Y}) to ({to.X},{to.Y})");
             MovePiece(pieceToMove, to);
+            PromoteIfNeeded(pieceToMove);
 
             if (wasCapture) {
                 List<Position> chainMoves = GetCaptureChain(pieceToMove);
@@ -129,61 +131,74 @@ public class GameController {
 
         if (piece == null) return validMoves;
 
-        int forwardDirection = (piece.Color == PieceColor.BLACK) ? 1 : -1;
+        // Piece Direction
+        List<int> directionsToCheck = new List<int>();
+        if (piece.Color == PieceColor.BLACK) {
+            directionsToCheck.Add(1);
+        } else {
+            directionsToCheck.Add(-1);
+        }
+
+        if (piece.PieceType == PieceType.KING) {
+            directionsToCheck.Add(directionsToCheck[0] * -1);
+        }
+
+        // int forwardDirection = (piece.Color == PieceColor.BLACK) ? 1 : -1;
         int currentX = piece.Position.X;
         int currentY = piece.Position.Y;
 
-        Position leftMove = new Position(currentX - 1, currentY + forwardDirection); // Depan kiri
-        Position rightMove = new Position(currentX + 1, currentY + forwardDirection); // Depan kanan
+        foreach (int direction in directionsToCheck) {
 
-        if (
-            leftMove.X >= 0 && leftMove.X < _board.Size &&
-            leftMove.Y >= 0 && leftMove.Y < _board.Size &&
-            _board[leftMove.X, leftMove.Y] == null
-        ) {
-            validMoves.Add(leftMove);
-        }
+            Position leftMove = new Position(currentX - 1, currentY + direction); // Depan kiri
+            Position rightMove = new Position(currentX + 1, currentY + direction); // Depan kanan
 
-        if (rightMove.X >= 0 && rightMove.X < _board.Size &&
-            rightMove.Y >= 0 && rightMove.Y < _board.Size &&
-            _board[rightMove.X, rightMove.Y] == null
-        ) {
-            validMoves.Add(rightMove);
-        }
+            if (
+                leftMove.X >= 0 && leftMove.X < _board.Size &&
+                leftMove.Y >= 0 && leftMove.Y < _board.Size &&
+                _board[leftMove.X, leftMove.Y] == null
+            ) {
+                validMoves.Add(leftMove);
+            }
 
-        // Capture kiri depan 
-        Position leftCapturePos = new Position(currentX - 2, currentY + (2 * forwardDirection)); // Posisi mendarat
-        Position leftMiddlePos = new Position(currentX - 1, currentY + forwardDirection); // Posisi bidak yang dicapture
+            if (rightMove.X >= 0 && rightMove.X < _board.Size &&
+                rightMove.Y >= 0 && rightMove.Y < _board.Size &&
+                _board[rightMove.X, rightMove.Y] == null
+            ) {
+                validMoves.Add(rightMove);
+            }
 
-        if (
-            leftCapturePos.X >= 0 && leftCapturePos.X < _board.Size && // Apakah posisi mendarat dalam board
-            leftCapturePos.Y >= 0 && leftCapturePos.Y < _board.Size &&
-            leftMiddlePos.X >= 0 && leftMiddlePos.X < _board.Size &&   // Apakah posisi makanan didalam board
-            leftMiddlePos.Y >= 0 && leftMiddlePos.Y < _board.Size &&
-            _board[leftCapturePos.X, leftCapturePos.Y] == null
-        ) {
-            IPiece middlePiece = _board[leftMiddlePos.X, leftMiddlePos.Y]; // Ambil posisi dari piece yang akan dimakan
-            if (middlePiece != null && middlePiece.Color != piece.Color) {
-                validMoves.Add(leftCapturePos); // Jika posisi terdapat piece dan warnanya berbeda maka tambahkan dalam valid move
+            // Capture kiri depan 
+            Position leftCapturePos = new Position(currentX - 2, currentY + (2 * direction)); // Posisi mendarat
+            Position leftMiddlePos = new Position(currentX - 1, currentY + direction); // Posisi bidak yang dicapture
+            if (
+                leftCapturePos.X >= 0 && leftCapturePos.X < _board.Size && // Apakah posisi mendarat dalam board
+                leftCapturePos.Y >= 0 && leftCapturePos.Y < _board.Size &&
+                leftMiddlePos.X >= 0 && leftMiddlePos.X < _board.Size &&   // Apakah posisi makanan didalam board
+                leftMiddlePos.Y >= 0 && leftMiddlePos.Y < _board.Size &&
+                _board[leftCapturePos.X, leftCapturePos.Y] == null
+            ) {
+                IPiece middlePiece = _board[leftMiddlePos.X, leftMiddlePos.Y]; // Ambil posisi dari piece yang akan dimakan
+                if (middlePiece != null && middlePiece.Color != piece.Color) {
+                    validMoves.Add(leftCapturePos); // Jika posisi terdapat piece dan warnanya berbeda maka tambahkan dalam valid move
+                }
+            }
+
+            Position rightCapturePos = new Position(currentX + 2, currentY + (2 * direction));
+            Position rightMiddlePos = new Position(currentX + 1, currentY + direction);
+
+            if (
+                rightCapturePos.X >= 0 && rightCapturePos.X < _board.Size &&
+                rightCapturePos.Y >= 0 && rightCapturePos.Y < _board.Size &&
+                rightMiddlePos.X >= 0 && rightMiddlePos.X < _board.Size &&
+                rightMiddlePos.Y >= 0 && rightMiddlePos.Y < _board.Size &&
+                _board[rightCapturePos.X, rightCapturePos.Y] == null
+            ) {
+                IPiece middlePiece = _board[rightMiddlePos.X, rightMiddlePos.Y];
+                if (middlePiece != null && middlePiece.Color != piece.Color) {
+                    validMoves.Add(rightCapturePos);
+                }
             }
         }
-
-        Position rightCapturePos = new Position(currentX + 2, currentY + (2 * forwardDirection));
-        Position rightMiddlePos = new Position(currentX + 1, currentY + forwardDirection);
-
-        if (
-            rightCapturePos.X >= 0 && rightCapturePos.X < _board.Size &&
-            rightCapturePos.Y >= 0 && rightCapturePos.Y < _board.Size &&
-            rightMiddlePos.X >= 0 && rightMiddlePos.X < _board.Size &&
-            rightMiddlePos.Y >= 0 && rightMiddlePos.Y < _board.Size &&
-            _board[rightCapturePos.X, rightCapturePos.Y] == null
-        ) {
-            IPiece middlePiece = _board[rightMiddlePos.X, rightMiddlePos.Y];
-            if (middlePiece != null && middlePiece.Color != piece.Color) {
-                validMoves.Add(rightCapturePos);
-            }
-        }
-
 
         return validMoves;
     }
@@ -259,12 +274,39 @@ public class GameController {
         }
     }
 
+    public void PromoteIfNeeded(IPiece piece) {
+        if (piece.PieceType == PieceType.KING) return;
+        if (piece.Color == PieceColor.BLACK && piece.Position.Y == _board.Size - 1) {
+            piece.PieceType = PieceType.KING;
+            Console.WriteLine($"{piece.Color} piece in ({piece.Position.X},{piece.Position.Y}) has promoted to KING!");
+        } else if (piece.Color == PieceColor.RED && piece.Position.Y == 0) {
+            piece.PieceType = PieceType.KING;
+            Console.WriteLine($"{piece.Color} piece in ({piece.Position.X},{piece.Position.Y}) has promoted to KING!");
+        }
+    }
+
     public IPlayer GetCurrentPlayer() { // current player
         return _players[_currentPlayerIndex];
     }
 
-    private void SwitchTurn() {
+    public void SwitchTurn() {
         _currentPlayerIndex = (_currentPlayerIndex + 1) % _players.Count;
+    }
+
+    public bool IsGameOver() {
+        IPlayer currentPlayer = GetCurrentPlayer();
+        var moves = GetAllValidMovesForPlayer(currentPlayer);
+        return moves.Count == 0;
+    }
+
+    public void EndGame() {
+        IPlayer loser = GetCurrentPlayer();
+        IPlayer winner = _players.First(p => p != loser);
+
+        Console.WriteLine("\n===========================================");
+        Console.WriteLine("               GAME OVER!                  ");
+        Console.WriteLine($"       {winner.Name} is the Winner        ");
+        Console.WriteLine("===========================================");
     }
 
     //======================================================================================================================//
@@ -319,6 +361,15 @@ public class GameController {
         board[1, 0] = new Piece { Color = PieceColor.BLACK, PieceType = PieceType.NORMAL, Position = new Position(1, 0) };
     }
 
+    public void InitializeKingTest(IBoard board) {
+        for (int y = 0; y < board.Size; y++)
+            for (int x = 0; x < board.Size; x++)
+                board[x, y] = null;
+
+        board[0, 3] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(0, 3) };
+        board[7, 4] = new Piece { Color = PieceColor.BLACK, PieceType = PieceType.NORMAL, Position = new Position(7, 4) };
+    }
+
 }
 
 /*
@@ -344,4 +395,11 @@ public class GameController {
     CapturePiece(...) dan Modifikasi HandleMove(...) HandleMove untuk memanggil CapturePiece dan menghapus bidak yang di capture
     HasForcedCaptures(IPlayer player) Menggunakan GetPossibleMoves yang sudah dimodifikasi untuk memeriksa semua bidak pemain. Dipanggil di setiap giliran jika hasilinya true
     GetCaptureChain(...) (Opsional/Tingkat Lanjut)
+*/
+
+/*
+    Promote to King Brief
+    + PromoteIfNeeded(IPiece) - untuk mengevaluasi piece yang akan menjadi king 
+    update rules GetPossibleMoves untuk piece king
+    update simbol untuk king
 */
