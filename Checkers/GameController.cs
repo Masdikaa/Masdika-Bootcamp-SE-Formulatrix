@@ -10,8 +10,8 @@ public class GameController {
     private readonly List<IPlayer> _players;
     private int _currentPlayerIndex = 0;
     private readonly Dictionary<IPlayer, List<IPiece>> _playerPieces;
-    public bool IsInCaptureChain { get; private set; }
-    public IPiece? ChainingPiece { get; private set; }
+    private bool IsInCaptureChain = false;
+    private IPiece? ChainingPiece = null;
 
     public event Action<Position, Position>? OnMoveExecuted;
 
@@ -24,29 +24,13 @@ public class GameController {
         _playerPieces[player1] = new List<IPiece>();
         _playerPieces[player2] = new List<IPiece>();
 
-        IsInCaptureChain = false;
-        ChainingPiece = null;
-
-        InitializeBoard(_board); // USE THIS
+        InitializeBoard(_board, player1, player2); // USE THIS
         // InitializeForChainTest(_board);
         // InitializeKingTest(_board);
 
-        for (int y = 0; y < _board.Size; y++) { // Scanning 8x8 board
-            for (int x = 0; x < _board.Size; x++) {
-
-                IPiece? piece = _board[x, y];
-
-                if (piece != null) {
-                    // Finding piece owner by color
-                    IPlayer owner = (piece.Color == player1.Color) ? player1 : player2;
-                    _playerPieces[owner].Add(piece); // Adding piece to owner
-                }
-            }
-        }
-
     }
 
-    public void InitializeBoard(IBoard board) {
+    public void InitializeBoard(IBoard board, IPlayer player1, IPlayer player2) {
         // Clearing all piece
         for (int y = 0; y < board.Size; y++)
             for (int x = 0; x < board.Size; x++)
@@ -75,6 +59,19 @@ public class GameController {
                         PieceType = PieceType.NORMAL,
                         Position = new Position(x, y)
                     };
+                }
+            }
+        }
+
+        for (int y = 0; y < _board.Size; y++) { // Scanning 8x8 board
+            for (int x = 0; x < _board.Size; x++) {
+
+                IPiece? piece = _board[x, y];
+
+                if (piece != null) {
+                    // Finding piece owner by color
+                    IPlayer owner = (piece.Color == player1.Color) ? player1 : player2;
+                    _playerPieces[owner].Add(piece); // Adding piece to owner
                 }
             }
         }
