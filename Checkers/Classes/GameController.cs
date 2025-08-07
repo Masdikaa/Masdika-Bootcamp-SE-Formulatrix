@@ -1,7 +1,7 @@
-namespace Checkers;
+namespace Checkers.Classes;
 
 using Checkers.Interfaces;
-using Checkers.Models;
+using Checkers.Classes.Models;
 using Checkers.Enums;
 using System.Threading;
 
@@ -13,7 +13,7 @@ public class GameController {
     private bool IsInCaptureChain = false;
     private IPiece? ChainingPiece = null;
 
-    public event Action<Position, Position>? OnMoveExecuted;
+    public event Action<string>? OnGameMessage;
 
     public GameController(IBoard board, IPlayer player1, IPlayer player2) {
 
@@ -24,9 +24,9 @@ public class GameController {
         _playerPieces[player1] = new List<IPiece>();
         _playerPieces[player2] = new List<IPiece>();
 
-        InitializeBoard(_board, player1, player2); // USE THIS
-        // InitializeForChainTest(_board);
-        // InitializeKingTest(_board);
+        // InitializeBoard(_board, player1, player2); // USE THIS
+        InitializeForChainTest(_board, player1, player2);
+        // InitializeKingTest(_board, player1, player2);
 
     }
 
@@ -75,6 +75,7 @@ public class GameController {
                 }
             }
         }
+
     }
 
     public void StartGame(
@@ -85,14 +86,14 @@ public class GameController {
         while (true) {
             displayBoardAction(_board, null);
             IPlayer currentPlayer = GetCurrentPlayer();
-            Console.WriteLine($"{currentPlayer.Name} {currentPlayer.Color} Turn");
+            OnGameMessage?.Invoke($"{currentPlayer.Name} {currentPlayer.Color} Turn");
 
             if (IsGameOver()) {
                 break;
             }
 
             if (IsInCaptureChain) {
-                Console.WriteLine("Executing capture chain...");
+                OnGameMessage?.Invoke("Executing capture chain...");
                 Thread.Sleep(700);
 
                 IPiece? pieceToContinue = ChainingPiece;
@@ -113,7 +114,7 @@ public class GameController {
 
             var availableMoves = GetAllValidMovesForPlayer(currentPlayer);
             if (availableMoves.Count == 0) {
-                Console.WriteLine($"No move avaible! {currentPlayer.Color} Lose 🫵🏻😹");
+                OnGameMessage?.Invoke($"No move avaible! {currentPlayer.Color} Lose 🫵🏻😹");
                 break;
             }
 
@@ -146,8 +147,8 @@ public class GameController {
 
             displayBoardAction(_board, destinations);
 
-            Console.WriteLine($"{currentPlayer.Name} Turn");
-            Console.WriteLine($"Selected piece at ({selectedPiece.Position.X}, {selectedPiece.Position.Y}).");
+            OnGameMessage?.Invoke($"{currentPlayer.Name} Turn");
+            OnGameMessage?.Invoke($"Selected piece at ({selectedPiece.Position.X}, {selectedPiece.Position.Y}).");
             Position selectedDestination = selectDestinationAction(destinations);
 
             HandleMove(selectedPiece.Position, selectedDestination);
@@ -170,7 +171,7 @@ public class GameController {
 
         IPiece? pieceToMove = _board[from.X, from.Y];
         if (pieceToMove == null || !CanMoveTo(pieceToMove, to)) {
-            Console.WriteLine($"Error: Invalid move ({from.X}, {from.Y}).");
+            OnGameMessage?.Invoke($"Error: Invalid move ({from.X}, {from.Y}).");
             return false;
         } else {
 
@@ -180,11 +181,9 @@ public class GameController {
                 CapturePiece(from, to);
             }
 
-            Console.WriteLine($"Moving {pieceToMove.Color} from ({from.X},{from.Y}) to ({to.X},{to.Y})");
+            OnGameMessage?.Invoke($"Moving {pieceToMove.Color} from ({from.X},{from.Y}) to ({to.X},{to.Y})");
             MovePiece(pieceToMove, to);
             PromoteIfNeeded(pieceToMove);
-
-            OnMoveExecuted?.Invoke(from, to);
 
             if (wasCapture) {
                 List<Position> chainMoves = GetCaptureChain(pieceToMove);
@@ -351,7 +350,7 @@ public class GameController {
                 _board[pos.X, pos.Y] = null; // Remove piece from board
                 IPlayer owner = _players.First(p => p.Color == capturedPiece.Color);
                 _playerPieces[owner].Remove(capturedPiece);
-                Console.WriteLine($"{capturedPiece.Color} Piece in ({pos.X},{pos.Y}) has been captured!");
+                OnGameMessage?.Invoke($"{capturedPiece.Color} Piece in ({pos.X},{pos.Y}) has been captured!");
             }
         }
     }
@@ -360,10 +359,10 @@ public class GameController {
         if (piece.PieceType == PieceType.KING) return;
         if (piece.Color == PieceColor.BLACK && piece.Position.Y == _board.Size - 1) {
             piece.PieceType = PieceType.KING;
-            Console.WriteLine($"{piece.Color} piece in ({piece.Position.X},{piece.Position.Y}) has promoted to KING!");
+            OnGameMessage?.Invoke($"{piece.Color} piece in ({piece.Position.X},{piece.Position.Y}) has promoted to KING!");
         } else if (piece.Color == PieceColor.RED && piece.Position.Y == 0) {
             piece.PieceType = PieceType.KING;
-            Console.WriteLine($"{piece.Color} piece in ({piece.Position.X},{piece.Position.Y}) has promoted to KING!");
+            OnGameMessage?.Invoke($"{piece.Color} piece in ({piece.Position.X},{piece.Position.Y}) has promoted to KING!");
         }
     }
 
@@ -385,10 +384,14 @@ public class GameController {
         IPlayer loser = GetCurrentPlayer();
         IPlayer winner = _players.First(p => p != loser);
 
-        Console.WriteLine("\n===========================================");
-        Console.WriteLine("               GAME OVER!                  ");
-        Console.WriteLine($"           {winner.Color} is the Winner   ");
-        Console.WriteLine("===========================================");
+        string endGamemessage = $@"
+        ===========================================
+                       GAME OVER!                  
+                   {winner.Color} is the Winner    
+        ===========================================
+        ";
+
+        OnGameMessage?.Invoke(endGamemessage);
     }
 
     // ====================================================================================================================== //
@@ -432,7 +435,7 @@ public class GameController {
     }
 
     // Chain Capture Testing 
-    public void InitializeForChainTest(IBoard board) {
+    public void InitializeForChainTest(IBoard board, IPlayer player1, IPlayer player2) {
         for (int y = 0; y < board.Size; y++)
             for (int x = 0; x < board.Size; x++)
                 board[x, y] = null;
@@ -441,9 +444,22 @@ public class GameController {
         board[4, 3] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(4, 3) };
         board[6, 5] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(6, 5) };
         board[1, 0] = new Piece { Color = PieceColor.BLACK, PieceType = PieceType.NORMAL, Position = new Position(1, 0) };
+
+        for (int y = 0; y < _board.Size; y++) { // Scanning 8x8 board
+            for (int x = 0; x < _board.Size; x++) {
+
+                IPiece? piece = _board[x, y];
+
+                if (piece != null) {
+                    // Finding piece owner by color
+                    IPlayer owner = (piece.Color == player1.Color) ? player1 : player2;
+                    _playerPieces[owner].Add(piece); // Adding piece to owner
+                }
+            }
+        }
     }
 
-    public void InitializeKingTest(IBoard board) {
+    public void InitializeKingTest(IBoard board, IPlayer player1, IPlayer player2) {
         for (int y = 0; y < board.Size; y++)
             for (int x = 0; x < board.Size; x++)
                 board[x, y] = null;
@@ -456,38 +472,26 @@ public class GameController {
         board[1, 4] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(1, 4) };
         board[3, 2] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(3, 2) };
 
+        for (int y = 0; y < _board.Size; y++) { // Scanning 8x8 board
+            for (int x = 0; x < _board.Size; x++) {
+
+                IPiece? piece = _board[x, y];
+
+                if (piece != null) {
+                    // Finding piece owner by color
+                    IPlayer owner = (piece.Color == player1.Color) ? player1 : player2;
+                    _playerPieces[owner].Add(piece); // Adding piece to owner
+                }
+            }
+        }
+
     }
 
 }
 
-/*
-    _board : piece dalam coordinate board, apakah null, operasi read/move akan berinteraksi dengan board
-    _players : list dari player (2 player), get informasi player, mengatur giliran
-    _currentPlayerIndex : penanda giliran, untuk SwitchTurn()
-    _playerPieces : daftar piece dalam board, daripada scanning seluruh board
-*/
 
 /*
-    Capture brief
-    Method :
-    + IsCapture(Position from, Position to) bool -> Apakah gerakan dari posisi from ke to merupakan sebuah lompatan (capture)? boolean return
-    + GetCapturedPositions(Position from, Position to) List<Position> -> Jika sebuah gerakan adalah capture, method ini bertugas menemukan posisi bidak lawan yang dilompati. Mengembalikan sebuah List<Position> yang berisi posisi dari semua bidak yang di-capture dalam satu lompatan itu
-    + CapturePiece(Position from, Position to) -> Eksekusi capture dan menghapus bidak yang dicapture dari _board dan _playerPieces
-    + HasForcedCaptures(IPlayer) bool -> Menerapkan aturan "wajib makan". Method ini memeriksa seluruh papan untuk menjawab pertanyaan: "Apakah pemain ini memiliki setidaknya satu gerakan capture yang bisa dilakukan?"
-    + GetCaptureChain(Position from, Position to) List<Position> -> Menangani capture berantai (multi-jump). Jika setelah melakukan capture pertama, bidak tersebut mendarat di posisi di mana ia bisa melakukan capture lagi, method ini akan menemukan seluruh rangkaian lompatannya.
-
-    Alur Implementasi :
-    IsCapture(Position from, Position to)
-    Modifikasi GetPossibleMoves(IPiece piece) untuk mendeteksi gerakan lompatan
-    GetCapturedPositions(Position from, Position to) untuk mencari korban yang bisa dimakan 
-    CapturePiece(...) dan Modifikasi HandleMove(...) HandleMove untuk memanggil CapturePiece dan menghapus bidak yang di capture
-    HasForcedCaptures(IPlayer player) Menggunakan GetPossibleMoves yang sudah dimodifikasi untuk memeriksa semua bidak pemain. Dipanggil di setiap giliran jika hasilinya true
-    GetCaptureChain(...) (Opsional/Tingkat Lanjut)
-*/
-
-/*
-    Promote to King Brief
-    + PromoteIfNeeded(IPiece) - untuk mengevaluasi piece yang akan menjadi king 
-    update rules GetPossibleMoves untuk piece king
-    update simbol untuk king
+    UI dipindah di Display - ConsoleWrite etc 
+    Structur Folder Classes 
+    Constructor 
 */

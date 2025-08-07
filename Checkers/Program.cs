@@ -2,7 +2,8 @@
 
 using Checkers.Enums;
 using Checkers.Interfaces;
-using Checkers.Models;
+using Checkers.Classes;
+using Checkers.Classes.Models;
 
 public class Program {
 
@@ -14,13 +15,10 @@ public class Program {
         IPlayer player2 = new Player { Color = PieceColor.RED, Name = "Player 2" };
 
         GameController game = new GameController(board, player1, player2);
-        game.OnMoveExecuted += Game_OnMoveExecuted;
+
+        game.OnGameMessage += HandleGameMessage;
         game.StartGame(DisplayBoard, SelectPiece, SelectDestination);
 
-    }
-
-    static void Game_OnMoveExecuted(Position from, Position to) {
-        Console.WriteLine($"--- EVENT: Piece moved from ({from.X}, {from.Y}) to ({to.X}, {to.Y}). Logging move...");
     }
 
     static void DisplayBoard(IBoard board, List<Position>? highlightedSquares) {
@@ -113,6 +111,11 @@ public class Program {
             }
             Console.WriteLine($"Invalid input. Please enter a number between 1 and {destinations.Count}.");
         }
+    }
+
+    static void HandleGameMessage(string message) {
+        Console.WriteLine(message);
+        Thread.Sleep(200);
     }
 
 }

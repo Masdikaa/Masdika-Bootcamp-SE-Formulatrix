@@ -1,4 +1,4 @@
-namespace Checkers.Models;
+namespace Checkers.Classes.Models;
 
 using Checkers.Enums;
 using Checkers.Interfaces;

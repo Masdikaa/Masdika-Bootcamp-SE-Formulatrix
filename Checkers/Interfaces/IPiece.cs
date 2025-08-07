@@ -1,6 +1,7 @@
 namespace Checkers.Interfaces;
 
-using Checkers.Models;
+using Checkers.Classes.Models;
+using Checkers.Classes;
 using Checkers.Enums;
 
 public interface IPiece {
