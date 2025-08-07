@@ -1,6 +1,6 @@
 namespace Checkers.Interfaces;
 
 public interface IBoard {
-    IPiece? this[int x, int y] { get; set; } // Indexer list piece
+    IPiece? this[int x, int y] { get; set; }
     int Size { get; }
 }

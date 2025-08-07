@@ -3,159 +3,66 @@ namespace Checkers.Classes;
 using Checkers.Interfaces;
 using Checkers.Classes.Models;
 using Checkers.Enums;
-using System.Threading;
 
 public class GameController {
     private readonly IBoard _board;
     private readonly List<IPlayer> _players;
     private int _currentPlayerIndex = 0;
+    private List<IPiece> _blackPiece;
+    private List<IPiece> _redPiece;
     private readonly Dictionary<IPlayer, List<IPiece>> _playerPieces;
-    private bool IsInCaptureChain = false;
-    private IPiece? ChainingPiece = null;
+    public bool IsInCaptureChain = false;
+    public IPiece? ChainingPiece = null;
 
     public event Action<string>? OnGameMessage;
 
-    public GameController(IBoard board, IPlayer player1, IPlayer player2) {
+    public GameController(IBoard board, List<IPlayer> players, List<IPiece> blackPiece, List<IPiece> redPiece) {
 
         _board = board;
-        _players = [player1, player2];
+        _players = players;
+        _blackPiece = blackPiece;
+        _redPiece = redPiece;
 
         _playerPieces = new Dictionary<IPlayer, List<IPiece>>();
-        _playerPieces[player1] = new List<IPiece>();
-        _playerPieces[player2] = new List<IPiece>();
+        _playerPieces[_players.First(p => p.Color == PieceColor.BLACK)] = _blackPiece;
+        _playerPieces[_players.First(p => p.Color == PieceColor.RED)] = _redPiece;
 
-        // InitializeBoard(_board, player1, player2); // USE THIS
-        InitializeForChainTest(_board, player1, player2);
-        // InitializeKingTest(_board, player1, player2);
+        InitializeBoard(_board); // USE THIS
+        // InitializeForChainTest(Board, player1, player2);
+        // InitializeKingTest(Board, player1, player2);
 
     }
 
-    public void InitializeBoard(IBoard board, IPlayer player1, IPlayer player2) {
-        // Clearing all piece
-        for (int y = 0; y < board.Size; y++)
-            for (int x = 0; x < board.Size; x++)
-                board[x, y] = null;
+    public void InitializeBoard(IBoard board) {
+        int blackPieceIndex = 0;
+        int redPieceIndex = 0;
 
-
-        // Initialize Black Piece Position
-        for (int y = 0; y < (board.Size - 5); y++) { // 3 rows
+        for (int y = 0; y < (board.Size - 5); y++) {
             for (int x = 0; x < board.Size; x++) {
-                if ((x + y) % 2 != 0) { // Black Piece
-                    board[x, y] = new Piece {
-                        Color = PieceColor.BLACK,
-                        PieceType = PieceType.NORMAL,
-                        Position = new Position(x, y),
-                    };
+                if ((x + y) % 2 != 0) {
+                    // board[x, y] = _blackPiece[i];
+                    // _blackPiece[i].Position = new Position(x, y);
+                    IPiece currentPiece = _blackPiece[blackPieceIndex];
+                    board[x, y] = currentPiece;
+                    currentPiece.Position = new Position(x, y);
+                    blackPieceIndex++;
                 }
             }
         }
 
-        // Initialize Red Piece Position
         for (int y = 5; y < board.Size; y++) {
             for (int x = 0; x < board.Size; x++) {
                 if ((x + y) % 2 != 0) {
-                    board[x, y] = new Piece {
-                        Color = PieceColor.RED,
-                        PieceType = PieceType.NORMAL,
-                        Position = new Position(x, y)
-                    };
+                    // board[x, y] = _redPiece[i];
+                    // _redPiece[i].Position = new Position(x, y);
+                    IPiece currentPiece = _redPiece[redPieceIndex];
+                    board[x, y] = currentPiece;
+                    currentPiece.Position = new Position(x, y);
+                    redPieceIndex++;
                 }
             }
         }
 
-        for (int y = 0; y < _board.Size; y++) { // Scanning 8x8 board
-            for (int x = 0; x < _board.Size; x++) {
-
-                IPiece? piece = _board[x, y];
-
-                if (piece != null) {
-                    // Finding piece owner by color
-                    IPlayer owner = (piece.Color == player1.Color) ? player1 : player2;
-                    _playerPieces[owner].Add(piece); // Adding piece to owner
-                }
-            }
-        }
-
-    }
-
-    public void StartGame(
-        Action<IBoard, List<Position>?> displayBoardAction,
-        Func<Dictionary<IPiece, List<Position>>, IPiece> selectPieceAction,
-        Func<List<Position>, Position> selectDestinationAction
-    ) {
-        while (true) {
-            displayBoardAction(_board, null);
-            IPlayer currentPlayer = GetCurrentPlayer();
-            OnGameMessage?.Invoke($"{currentPlayer.Name} {currentPlayer.Color} Turn");
-
-            if (IsGameOver()) {
-                break;
-            }
-
-            if (IsInCaptureChain) {
-                OnGameMessage?.Invoke("Executing capture chain...");
-                Thread.Sleep(700);
-
-                IPiece? pieceToContinue = ChainingPiece;
-
-                if (pieceToContinue != null) {
-                    List<Position> chainMoves = GetCaptureChain(pieceToContinue);
-
-                    if (chainMoves.Count > 0) {
-                        Position startPos = pieceToContinue.Position;
-                        Position endPos = chainMoves[0];
-
-                        HandleMove(startPos, endPos);
-                    }
-                }
-
-                continue;
-            }
-
-            var availableMoves = GetAllValidMovesForPlayer(currentPlayer);
-            if (availableMoves.Count == 0) {
-                OnGameMessage?.Invoke($"No move avaible! {currentPlayer.Color} Lose 🫵🏻😹");
-                break;
-            }
-
-            bool mustCapture = HasForcedCaptures(currentPlayer);
-            Dictionary<IPiece, List<Position>> movesToShow;
-
-            if (mustCapture) {
-                movesToShow = new Dictionary<IPiece, List<Position>>();
-
-                foreach (var moveEntry in availableMoves) {
-                    IPiece piece = moveEntry.Key;
-                    List<Position> captureDestinations = new List<Position>();
-
-                    foreach (Position dest in moveEntry.Value) {
-                        if (IsCapture(piece.Position, dest)) {
-                            captureDestinations.Add(dest);
-                        }
-                    }
-
-                    if (captureDestinations.Count > 0) {
-                        movesToShow[piece] = captureDestinations;
-                    }
-                }
-            } else {
-                movesToShow = availableMoves;
-            }
-
-            IPiece selectedPiece = selectPieceAction(movesToShow);
-            List<Position> destinations = movesToShow[selectedPiece];
-
-            displayBoardAction(_board, destinations);
-
-            OnGameMessage?.Invoke($"{currentPlayer.Name} Turn");
-            OnGameMessage?.Invoke($"Selected piece at ({selectedPiece.Position.X}, {selectedPiece.Position.Y}).");
-            Position selectedDestination = selectDestinationAction(destinations);
-
-            HandleMove(selectedPiece.Position, selectedDestination);
-
-        }
-
-        EndGame();
     }
 
     public void MovePiece(IPiece piece, Position to) {
@@ -171,8 +78,10 @@ public class GameController {
 
         IPiece? pieceToMove = _board[from.X, from.Y];
         if (pieceToMove == null || !CanMoveTo(pieceToMove, to)) {
+
             OnGameMessage?.Invoke($"Error: Invalid move ({from.X}, {from.Y}).");
             return false;
+
         } else {
 
             bool wasCapture = IsCapture(from, to);
@@ -201,7 +110,7 @@ public class GameController {
         }
     }
 
-    public bool CanMoveTo(IPiece piece, Position to) { // Validate, Hiding detail in Hanle Move
+    public bool CanMoveTo(IPiece piece, Position to) {
         if (piece == null) return false;
         List<Position> possibleMoves = GetPossibleMoves(piece);
         return possibleMoves.Contains(to);
@@ -212,7 +121,6 @@ public class GameController {
 
         if (piece == null) return validMoves;
 
-        // Piece Direction
         List<int> directionsToCheck = new List<int>();
         if (piece.Color == PieceColor.BLACK) {
             directionsToCheck.Add(1);
@@ -224,14 +132,13 @@ public class GameController {
             directionsToCheck.Add(directionsToCheck[0] * -1);
         }
 
-        // int forwardDirection = (piece.Color == PieceColor.BLACK) ? 1 : -1;
         int currentX = piece.Position.X;
         int currentY = piece.Position.Y;
 
         foreach (int direction in directionsToCheck) {
 
-            Position leftMove = new Position(currentX - 1, currentY + direction); // Depan kiri
-            Position rightMove = new Position(currentX + 1, currentY + direction); // Depan kanan
+            Position leftMove = new Position(currentX - 1, currentY + direction);
+            Position rightMove = new Position(currentX + 1, currentY + direction);
 
             if (
                 leftMove.X >= 0 && leftMove.X < _board.Size &&
@@ -248,25 +155,23 @@ public class GameController {
                 validMoves.Add(rightMove);
             }
 
-            // Capture kiri depan 
-            Position leftCapturePos = new Position(currentX - 2, currentY + (2 * direction)); // Posisi mendarat
-            Position leftMiddlePos = new Position(currentX - 1, currentY + direction); // Posisi bidak yang dicapture
+            Position leftCapturePos = new Position(currentX - 2, currentY + (2 * direction));
+            Position leftMiddlePos = new Position(currentX - 1, currentY + direction);
             if (
-                leftCapturePos.X >= 0 && leftCapturePos.X < _board.Size && // Apakah posisi mendarat dalam board
+                leftCapturePos.X >= 0 && leftCapturePos.X < _board.Size &&
                 leftCapturePos.Y >= 0 && leftCapturePos.Y < _board.Size &&
-                leftMiddlePos.X >= 0 && leftMiddlePos.X < _board.Size &&   // Apakah posisi makanan didalam board
+                leftMiddlePos.X >= 0 && leftMiddlePos.X < _board.Size &&
                 leftMiddlePos.Y >= 0 && leftMiddlePos.Y < _board.Size &&
                 _board[leftCapturePos.X, leftCapturePos.Y] == null
             ) {
-                IPiece? middlePiece = _board[leftMiddlePos.X, leftMiddlePos.Y]; // Ambil posisi dari piece yang akan dimakan
+                IPiece? middlePiece = _board[leftMiddlePos.X, leftMiddlePos.Y];
                 if (middlePiece != null && middlePiece.Color != piece.Color) {
-                    validMoves.Add(leftCapturePos); // Jika posisi terdapat piece dan warnanya berbeda maka tambahkan dalam valid move
+                    validMoves.Add(leftCapturePos);
                 }
             }
 
             Position rightCapturePos = new Position(currentX + 2, currentY + (2 * direction));
             Position rightMiddlePos = new Position(currentX + 1, currentY + direction);
-
             if (
                 rightCapturePos.X >= 0 && rightCapturePos.X < _board.Size &&
                 rightCapturePos.Y >= 0 && rightCapturePos.Y < _board.Size &&
@@ -287,10 +192,9 @@ public class GameController {
     public Dictionary<IPiece, List<Position>> GetAllValidMovesForPlayer(IPlayer player) {
         Dictionary<IPiece, List<Position>> allValidMoves = new Dictionary<IPiece, List<Position>>();
 
-        List<IPiece> playerPieces = _playerPieces[player]; // get all pieceis from _playerPieces
+        List<IPiece> playerPieces = _playerPieces[player];
 
         foreach (IPiece piece in playerPieces) {
-            // Possible move for each piece
             List<Position> moves = GetPossibleMoves(piece);
             if (moves.Count > 0) {
                 allValidMoves[piece] = moves;
@@ -301,7 +205,7 @@ public class GameController {
     }
 
     public bool IsCapture(Position from, Position to) {
-        int deltaX = Math.Abs(to.X - from.X); // Hitung selisih dari posisi bidak ke 
+        int deltaX = Math.Abs(to.X - from.X);
         int deltaY = Math.Abs(to.Y - from.Y);
 
         return deltaX == 2 && deltaY == 2;
@@ -347,7 +251,7 @@ public class GameController {
         foreach (Position pos in capturedPosition) {
             IPiece? capturedPiece = _board[pos.X, pos.Y];
             if (capturedPiece != null) {
-                _board[pos.X, pos.Y] = null; // Remove piece from board
+                _board[pos.X, pos.Y] = null;
                 IPlayer owner = _players.First(p => p.Color == capturedPiece.Color);
                 _playerPieces[owner].Remove(capturedPiece);
                 OnGameMessage?.Invoke($"{capturedPiece.Color} Piece in ({pos.X},{pos.Y}) has been captured!");
@@ -364,10 +268,15 @@ public class GameController {
             piece.PieceType = PieceType.KING;
             OnGameMessage?.Invoke($"{piece.Color} piece in ({piece.Position.X},{piece.Position.Y}) has promoted to KING!");
         }
+        // Error class
     }
 
-    public IPlayer GetCurrentPlayer() { // current player
+    public IPlayer GetCurrentPlayer() {
         return _players[_currentPlayerIndex];
+    }
+
+    public IBoard GetBoard() {
+        return _board;
     }
 
     public void SwitchTurn() {
@@ -445,10 +354,10 @@ public class GameController {
         board[6, 5] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(6, 5) };
         board[1, 0] = new Piece { Color = PieceColor.BLACK, PieceType = PieceType.NORMAL, Position = new Position(1, 0) };
 
-        for (int y = 0; y < _board.Size; y++) { // Scanning 8x8 board
-            for (int x = 0; x < _board.Size; x++) {
+        for (int y = 0; y < board.Size; y++) { // Scanning 8x8 board
+            for (int x = 0; x < board.Size; x++) {
 
-                IPiece? piece = _board[x, y];
+                IPiece? piece = board[x, y];
 
                 if (piece != null) {
                     // Finding piece owner by color
@@ -472,10 +381,10 @@ public class GameController {
         board[1, 4] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(1, 4) };
         board[3, 2] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(3, 2) };
 
-        for (int y = 0; y < _board.Size; y++) { // Scanning 8x8 board
-            for (int x = 0; x < _board.Size; x++) {
+        for (int y = 0; y < board.Size; y++) { // Scanning 8x8 board
+            for (int x = 0; x < board.Size; x++) {
 
-                IPiece? piece = _board[x, y];
+                IPiece? piece = board[x, y];
 
                 if (piece != null) {
                     // Finding piece owner by color
@@ -488,10 +397,3 @@ public class GameController {
     }
 
 }
-
-
-/*
-    UI dipindah di Display - ConsoleWrite etc 
-    Structur Folder Classes 
-    Constructor 
-*/
