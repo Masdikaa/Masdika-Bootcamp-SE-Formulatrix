@@ -28,8 +28,6 @@ public class GameController {
         _playerPieces[_players.First(p => p.Color == PieceColor.RED)] = _redPiece;
 
         InitializeBoard(_board); // USE THIS
-        // InitializeForChainTest(Board, player1, player2);
-        // InitializeKingTest(Board, player1, player2);
 
     }
 
@@ -40,8 +38,6 @@ public class GameController {
         for (int y = 0; y < (board.Size - 5); y++) {
             for (int x = 0; x < board.Size; x++) {
                 if ((x + y) % 2 != 0) {
-                    // board[x, y] = _blackPiece[i];
-                    // _blackPiece[i].Position = new Position(x, y);
                     IPiece currentPiece = _blackPiece[blackPieceIndex];
                     board[x, y] = currentPiece;
                     currentPiece.Position = new Position(x, y);
@@ -53,8 +49,6 @@ public class GameController {
         for (int y = 5; y < board.Size; y++) {
             for (int x = 0; x < board.Size; x++) {
                 if ((x + y) % 2 != 0) {
-                    // board[x, y] = _redPiece[i];
-                    // _redPiece[i].Position = new Position(x, y);
                     IPiece currentPiece = _redPiece[redPieceIndex];
                     board[x, y] = currentPiece;
                     currentPiece.Position = new Position(x, y);
@@ -268,7 +262,6 @@ public class GameController {
             piece.PieceType = PieceType.KING;
             OnGameMessage?.Invoke($"{piece.Color} piece in ({piece.Position.X},{piece.Position.Y}) has promoted to KING!");
         }
-        // Error class
     }
 
     public IPlayer GetCurrentPlayer() {
@@ -301,99 +294,6 @@ public class GameController {
         ";
 
         OnGameMessage?.Invoke(endGamemessage);
-    }
-
-    // ====================================================================================================================== //
-
-    public void Show() {
-        Console.WriteLine("--- List Player ---");
-        Console.WriteLine($"{_players[0].Name} is {_players[0].Color}");
-        Console.WriteLine($"{_players[1].Name} is {_players[1].Color}");
-        Console.WriteLine();
-    }
-
-    public void ShowPlayerPieces() {
-        Console.WriteLine("--- List Piece per Player ---");
-
-        foreach (var playerEntry in _playerPieces) {
-
-            IPlayer player = playerEntry.Key;
-            List<IPiece> pieces = playerEntry.Value;
-
-            Console.WriteLine($"Player: {player.Name} ({player.Color}) - Pieces: {pieces.Count}");
-
-            int i = 0;
-            foreach (IPiece piece in pieces) {
-                Console.WriteLine($"{++i}\tType: {piece.PieceType}, Position: ({piece.Position.X},{piece.Position.Y})");
-            }
-
-            Console.WriteLine();
-        }
-    }
-
-    public void ShowBoardPosition() {
-        for (int y = 0; y < _board.Size; y++) {
-            for (int x = 0; x < _board.Size; x++) {
-                Console.Write($" [{x},{y}] ");
-                if (x < _board.Size - 1) {
-                    Console.Write("+");
-                }
-            }
-            Console.WriteLine();
-        }
-    }
-
-    // Chain Capture Testing 
-    public void InitializeForChainTest(IBoard board, IPlayer player1, IPlayer player2) {
-        for (int y = 0; y < board.Size; y++)
-            for (int x = 0; x < board.Size; x++)
-                board[x, y] = null;
-
-        board[2, 1] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(2, 1) };
-        board[4, 3] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(4, 3) };
-        board[6, 5] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(6, 5) };
-        board[1, 0] = new Piece { Color = PieceColor.BLACK, PieceType = PieceType.NORMAL, Position = new Position(1, 0) };
-
-        for (int y = 0; y < board.Size; y++) { // Scanning 8x8 board
-            for (int x = 0; x < board.Size; x++) {
-
-                IPiece? piece = board[x, y];
-
-                if (piece != null) {
-                    // Finding piece owner by color
-                    IPlayer owner = (piece.Color == player1.Color) ? player1 : player2;
-                    _playerPieces[owner].Add(piece); // Adding piece to owner
-                }
-            }
-        }
-    }
-
-    public void InitializeKingTest(IBoard board, IPlayer player1, IPlayer player2) {
-        for (int y = 0; y < board.Size; y++)
-            for (int x = 0; x < board.Size; x++)
-                board[x, y] = null;
-
-        board[4, 1] = new Piece { Color = PieceColor.BLACK, PieceType = PieceType.NORMAL, Position = new Position(4, 1) };
-        board[5, 2] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(5, 2) };
-        board[5, 4] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(5, 4) };
-        board[3, 6] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(3, 6) };
-        board[1, 6] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(1, 6) };
-        board[1, 4] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(1, 4) };
-        board[3, 2] = new Piece { Color = PieceColor.RED, PieceType = PieceType.NORMAL, Position = new Position(3, 2) };
-
-        for (int y = 0; y < board.Size; y++) { // Scanning 8x8 board
-            for (int x = 0; x < board.Size; x++) {
-
-                IPiece? piece = board[x, y];
-
-                if (piece != null) {
-                    // Finding piece owner by color
-                    IPlayer owner = (piece.Color == player1.Color) ? player1 : player2;
-                    _playerPieces[owner].Add(piece); // Adding piece to owner
-                }
-            }
-        }
-
     }
 
 }

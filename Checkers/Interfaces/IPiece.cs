@@ -1,6 +1,5 @@
 namespace Checkers.Interfaces;
 
-using Checkers.Classes.Models;
 using Checkers.Classes;
 using Checkers.Enums;
 

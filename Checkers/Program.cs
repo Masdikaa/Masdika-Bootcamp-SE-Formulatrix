@@ -21,9 +21,6 @@ public class Program {
         List<IPiece> blackPiece = CreatePieceSet(PieceColor.BLACK, 12);
         List<IPiece> redPiece = CreatePieceSet(PieceColor.RED, 12);
 
-        // IPiece blackPiece = new Piece();
-        // IPiece redPiece = new Piece();
-
         GameController game = new GameController(board, players, blackPiece, redPiece);
         Display display = new Display(game);
 
