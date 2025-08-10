@@ -20,6 +20,12 @@ public class Display {
 
     public Display(GameController gameController) {
         _gameController = gameController;
+
+        _gameController.OnGameMessage += HandleGameMessage;
+        _gameController.OnPieceCaptured += HandlePieceCaptured;
+        _gameController.OnPiecePromoted += HandlePiecePromoted;
+        _gameController.OnWinnerDeclared += HandleWinnerDeclared;
+        _gameController.OnUIMessage += HandleUIMessage;
     }
 
     public void StartGame() {
@@ -179,6 +185,29 @@ public class Display {
             }
             Console.WriteLine($"Invalid input. Please enter a number between 1 and {destinations.Count}.");
         }
+    }
+
+    public void HandleGameMessage(string message) {
+        Console.WriteLine(message);
+    }
+
+    private void HandlePieceCaptured(IPiece piece) {
+        Console.WriteLine($"{piece.Color} piece in ({piece.Position.X},{piece.Position.Y}) has been captured!");
+    }
+
+    private void HandlePiecePromoted(IPiece piece) {
+        Console.WriteLine($"{piece.Color} piece in ({piece.Position.X},{piece.Position.Y}) has promoted to a King!");
+    }
+
+    private void HandleWinnerDeclared(IPlayer winner) {
+        Console.WriteLine("\n===========================================");
+        Console.WriteLine("               GAME OVER!                  ");
+        Console.WriteLine($"      Winner {winner.Name} ({winner.Color})!      ");
+        Console.WriteLine("===========================================");
+    }
+
+    private void HandleUIMessage(string message) {
+        Console.WriteLine(message);
     }
 
 }

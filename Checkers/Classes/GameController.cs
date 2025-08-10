@@ -1,7 +1,6 @@
 namespace Checkers.Classes;
 
 using Checkers.Interfaces;
-using Checkers.Classes.Models;
 using Checkers.Enums;
 
 public class GameController {
@@ -13,6 +12,11 @@ public class GameController {
     private readonly Dictionary<IPlayer, List<IPiece>> _playerPieces;
     public bool IsInCaptureChain = false;
     public IPiece? ChainingPiece = null;
+
+    public event Action<IPiece>? OnPieceCaptured;
+    public event Action<IPiece>? OnPiecePromoted;
+    public event Action<IPlayer>? OnWinnerDeclared;
+    public event Action<string>? OnUIMessage;
 
     public event Action<string>? OnGameMessage;
 
@@ -74,6 +78,7 @@ public class GameController {
         if (pieceToMove == null || !CanMoveTo(pieceToMove, to)) {
 
             OnGameMessage?.Invoke($"Error: Invalid move ({from.X}, {from.Y}).");
+            // OnUIMessage.Invoke();
             return false;
 
         } else {
@@ -248,7 +253,7 @@ public class GameController {
                 _board[pos.X, pos.Y] = null;
                 IPlayer owner = _players.First(p => p.Color == capturedPiece.Color);
                 _playerPieces[owner].Remove(capturedPiece);
-                OnGameMessage?.Invoke($"{capturedPiece.Color} Piece in ({pos.X},{pos.Y}) has been captured!");
+                OnPieceCaptured?.Invoke(capturedPiece);
             }
         }
     }
@@ -257,10 +262,10 @@ public class GameController {
         if (piece.PieceType == PieceType.KING) return;
         if (piece.Color == PieceColor.BLACK && piece.Position.Y == _board.Size - 1) {
             piece.PieceType = PieceType.KING;
-            OnGameMessage?.Invoke($"{piece.Color} piece in ({piece.Position.X},{piece.Position.Y}) has promoted to KING!");
+            OnPiecePromoted?.Invoke(piece);
         } else if (piece.Color == PieceColor.RED && piece.Position.Y == 0) {
             piece.PieceType = PieceType.KING;
-            OnGameMessage?.Invoke($"{piece.Color} piece in ({piece.Position.X},{piece.Position.Y}) has promoted to KING!");
+            OnPiecePromoted?.Invoke(piece);
         }
     }
 
@@ -286,14 +291,7 @@ public class GameController {
         IPlayer loser = GetCurrentPlayer();
         IPlayer winner = _players.First(p => p != loser);
 
-        string endGamemessage = $@"
-        ===========================================
-                       GAME OVER!                  
-                   {winner.Color} is the Winner    
-        ===========================================
-        ";
-
-        OnGameMessage?.Invoke(endGamemessage);
+        OnWinnerDeclared?.Invoke(winner);
     }
 
 }

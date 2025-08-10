@@ -24,12 +24,8 @@ public class Program {
         GameController game = new GameController(board, players, blackPiece, redPiece);
         Display display = new Display(game);
 
-        game.OnGameMessage += HandleGameMessage;
+        // game.OnGameMessage += HandleGameMessage;
         display.StartGame();
-    }
-
-    static void HandleGameMessage(string message) {
-        Console.WriteLine(message);
     }
 
     static List<IPiece> CreatePieceSet(PieceColor color, int count) {
