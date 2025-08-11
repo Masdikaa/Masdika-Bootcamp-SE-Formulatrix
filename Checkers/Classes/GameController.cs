@@ -31,7 +31,7 @@ public class GameController {
         _playerPieces[_players.First(p => p.Color == PieceColor.BLACK)] = _blackPiece;
         _playerPieces[_players.First(p => p.Color == PieceColor.RED)] = _redPiece;
 
-        InitializeBoard(_board); // USE THIS
+        // InitializeBoard(_board); // USE THIS
 
     }
 
