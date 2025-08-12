@@ -5,9 +5,14 @@ public class StoreDbContext : DbContext {
     // Property untuk table product
     public DbSet<Product> Products { get; set; }
 
+    public StoreDbContext(DbContextOptions<StoreDbContext> options) : base(options) { }
+
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
-        optionsBuilder.UseSqlite("Data Source=OnlineStore.db"); // Use SQLite as db provider
-        optionsBuilder.EnableSensitiveDataLogging();
+        if (!optionsBuilder.IsConfigured) {
+            optionsBuilder.UseSqlite("Data Source=OnlineStore.db"); // Use SQLite as db provider
+            optionsBuilder.EnableSensitiveDataLogging();
+        }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
@@ -78,3 +83,13 @@ public class StoreDbContext : DbContext {
     } // dotnet ef migrations add AddProductSeedData - Migrasi Seed
 
 }
+
+
+/*
+
+    OnConfiguring -> Setting untuk konfigurasi database connection
+    Jika menggunakan Dependency Injection, OnConfiguring biasanya jarang dipakai karena konfigurasi dilakukan dari luar
+
+    OnModelCreating -> Konfigurasi metadata seperti set Relasi antar entity, panjang data
+
+*/
