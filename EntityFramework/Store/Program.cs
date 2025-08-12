@@ -1,91 +1,67 @@
-﻿public class Program {
+﻿using Microsoft.EntityFrameworkCore;
 
-    public static void Main() {
+public class Program {
 
-        StoreDbContext context = new StoreDbContext();
-
-        // AddProduct(context, "Sampoerna", 28_000, 300);
-
-        // DeleteProduct(context, "Sampoerna");
-
-        // UpdateProduct(
-        //     context: context,
-        //     productName: "Gudang Garam",
-        //     newName: "Gudang Garam Surya",
-        //     newStock: 150,
-        //     newPrice: 27000
-        // );
-
-        ShowProduct(context);
-
-    }
-
-    public static void AddProduct(StoreDbContext context, string name, decimal price, int stock) {
-
-        using (context) {
-            Console.WriteLine("Adding new product...");
-            Product newProduct = new Product { Name = name, Price = price, Stock = stock };
-
-            context.Products.Add(newProduct);
-            context.SaveChanges();
-
-            Console.WriteLine($"Success add {name}");
+    public static async Task Main() {
+        using (StoreDbContext context = new StoreDbContext()) {
+            // await AddProductAsync(context, "Esse", 32_000, 32);
+            await ShowProductAsync(context);
         }
-
     }
 
-    public static void ShowProduct(StoreDbContext context) {
+    public static async Task AddProductAsync(StoreDbContext context, string name, decimal price, int stock) {
+        Console.WriteLine("Adding new product...");
+        Product newProduct = new Product { Name = name, Price = price, Stock = stock };
+
+        context.Products.Add(newProduct);
+        await context.SaveChangesAsync();
+
+        Console.WriteLine($"Success add {name}");
+    }
+
+    public static async Task ShowProductAsync(StoreDbContext context) {
+
         Console.WriteLine("Showing products");
 
-        List<Product> allProduct = context.Products.ToList();
+        List<Product> allProduct = await context.Products.ToListAsync();
         foreach (var p in allProduct) {
-            Console.WriteLine($"ID: {p.Id}, Name: {p.Name}, Price: {p.Price}, Stock: {p.Stock}");
+            Console.WriteLine($"ID: {p.Id},\tName: {p.Name}, Price: {p.Price}, Stock: {p.Stock}");
         }
-
-        // Console.WriteLine("\nFiltering Product:");
-        // var cheapProducts = context.Products
-        //     .Where(p => p.Price < 10000000)
-        //     .ToList();
-
-        // foreach (var p in cheapProducts) {
-        //     Console.WriteLine($"- {p.Name} ({p.Price})");
-        // }
 
     }
 
-    public static void UpdateProduct(
+    public static async Task UpdateProductAsync(
         StoreDbContext context,
         string productName,
         string newName,
         decimal newPrice,
         int newStock
     ) {
-        using (context) {
-            Console.WriteLine($"Updating {productName}");
-            var productToUpdate = context.Products.FirstOrDefault(product => product.Name == productName);
-            if (productToUpdate != null) {
-                productToUpdate.Name = newName;
-                productToUpdate.Price = newPrice;
-                productToUpdate.Stock = newStock;
-                context.SaveChanges();
-                Console.WriteLine($"Success updating {productName}");
-            } else {
-                Console.WriteLine($"Can't find {productName}");
-            }
+
+        Console.WriteLine($"Updating {productName}");
+        var productToUpdate = await context.Products.FirstOrDefaultAsync(product => product.Name == productName);
+        if (productToUpdate != null) {
+            productToUpdate.Name = newName;
+            productToUpdate.Price = newPrice;
+            productToUpdate.Stock = newStock;
+            await context.SaveChangesAsync();
+            Console.WriteLine($"Success updating {productName}");
+        } else {
+            Console.WriteLine($"Can't find {productName}");
         }
+
     }
 
-    public static void DeleteProduct(StoreDbContext context, string name) {
-        using (context) {
-            Console.WriteLine("Deleting product...");
-            Product? productToDelete = context.Products.FirstOrDefault(product => product.Name == name);
-            if (productToDelete != null) {
-                context.Products.Remove(productToDelete);
-                context.SaveChanges();
-                Console.WriteLine($"Success remove {name}");
-            } else {
-                Console.WriteLine($"Can't find {name}");
-            }
+    public static async Task DeleteProductAsync(StoreDbContext context, string name) {
+        Console.WriteLine("Deleting product...");
+        Product? productToDelete = await context.Products.FirstOrDefaultAsync(product => product.Name == name);
+        Thread.Sleep(100);
+        if (productToDelete != null) {
+            context.Products.Remove(productToDelete);
+            await context.SaveChangesAsync();
+            Console.WriteLine($"Success remove {name}");
+        } else {
+            Console.WriteLine($"Can't find {name}");
         }
     }
 
