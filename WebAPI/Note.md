@@ -1,21 +1,21 @@
 # Web API
 
-### Create Project by Console
+### **Create Project by Console**
 
 Creating ASP.NET Core Web API Template menggunakan command `dotnet new webpapi -o api`
 
-### Running Project
+### **Running Project**
 
 `dotnet watch run` / `dotnet run`
 
-### Folder Structure
+### **Folder Structure**
 
 - `Properties` folder untuk menyimpan spesifik settings untuk project
 - `launchSettings.json` -> File ini hanya digunakan untuk pengembangan di komputer lokal Anda dan tidak akan ikut di-publish ke server produksi
 - `appsettings.json` -> Base Configuration untuk semua env (Development, Staging, Production)
 - `appsettings.Development.json` -> Override base configuration untuk use case yang lebih spesifik
 
-### Program Entry Point
+### **Program Entry Point**
 
 1. Create and configure **WebApplicationBuilder**
 
@@ -61,7 +61,7 @@ Creating ASP.NET Core Web API Template menggunakan command `dotnet new webpapi -
    .WithOpenApi();
    ```
 
-### Creating Models
+### **Creating Models**
 
 Create folder **Models** in project directory and add Entity file<br>
 Example :
@@ -98,7 +98,7 @@ public class Comment {
 }
 ```
 
-### ORM with Entity Framework
+### **ORM with Entity Framework**
 
 - Install Entity Framework<br>
   `dotnet add package Microsoft.EntityFrameworkCore.Design`<br>
@@ -131,7 +131,7 @@ public class Comment {
   `dotnet ef migrations add Init`<br>
   `dotnet ef database update`
 
-### Controller
+### **Controller**
 
 - Create **Controller** folder and add `StockController.cs`<br>
 
@@ -171,7 +171,7 @@ public class Comment {
 
 - Run project `dotnet watch run`
 
-### DTOs (Data Transfer Object)
+### **DTOs (Data Transfer Object)**
 
 Object untuk komunikasi antar layer<br>
 Response Request format<br>
@@ -260,7 +260,7 @@ Example case in username and password<br>
   }
   ```
 
-### Post (Create)
+### **Post (Create)**
 
 - Create new request DTOs
   ```
@@ -295,6 +295,61 @@ Example case in username and password<br>
     _context.Stocks.Add(stockModel);
     _context.SaveChanges();
     return CreatedAtAction(nameof(GetById), new { id = stockModel.Id }, stockModel.ToStockDto());
+  }
+  ```
+
+### **Update (Put)**
+
+Update akan berbeda daripada Create, karena pada update akan mencari Id dari data yang akan diupdate
+Create hanya akan menggunakan `Add` Method, sedangkan update akan sedikit lebih rumit karena akan mencari yang ada terlebih dahulu `FirstOrDefault`
+
+- Create DTOs for Update
+  ```
+  public class UpdateStockRequestDto() {
+     public string Symbol { set; get; } = string.Empty;
+     public string Company { set; get; } = string.Empty;
+     public decimal Purchase { get; set; }
+     public decimal LastDiv { get; set; }
+     public string Industries { get; set; } = string.Empty;
+     public long MarketCap { get; set; }
+  }
+  ```
+- Add Update Method in Controller
+
+  ```
+  [HttpPut]
+  [Route("{id}")]
+  public IActionResult Update([FromRoute] int id, [FromBody] UpdateStockRequestDto updateDto) {
+     var stockModel = _context.Stocks.FirstOrDefault(stock => stock.Id == id);
+        if (stockModel != null) {
+            stockModel.Symbol = updateDto.Symbol;
+            stockModel.Company = updateDto.Company;
+            stockModel.Purchase = updateDto.Purchase;
+            stockModel.LastDiv = updateDto.LastDiv;
+            stockModel.Industries = updateDto.Industries;
+            stockModel.MarketCap = updateDto.MarketCap;
+            _context.SaveChanges();
+            return Ok(stockModel.ToStockDto());
+        }
+      return NotFound();
+  }
+  ```
+
+### **Delete**
+
+Get Id and call Remove Method
+
+- Implement method in `StockController`
+  ```
+  [HttpDelete]
+  [Route("{id}")]
+  public IActionResult Delete([FromRoute] int id) {
+     var stockModel = _context.Stocks.FirstOrDefault(stock => stock.Id == id);
+     if (stockModel != null) {
+        _context.Stocks.Remove(stockModel);
+        _context.SaveChanges();
+     }
+     return NotFound();
   }
   ```
 
