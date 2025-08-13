@@ -260,6 +260,44 @@ Example case in username and password<br>
   }
   ```
 
+### Post (Create)
+
+- Create new request DTOs
+  ```
+  public class CreateStockRequestDto {
+    public string Symbol { set; get; } = string.Empty;
+    public string Company { set; get; } = string.Empty;
+    public decimal Purchase { get; set; }
+    public decimal LastDiv { get; set; }
+    public string Industries { get; set; } = string.Empty;
+    public long MarketCap { get; set; }
+  }
+  ```
+  Menghilngkan ID agar tidak dapat input ID dalam JSON Body
+- Modify StockMapper and add `CreateStockRequestDto` Mapper method
+  ```
+   public static Stock ToStockFromCreateDto(this CreateStockRequestDto stockDto) {
+        return new Stock {
+            Symbol = stockDto.Symbol,
+            Company = stockDto.Company,
+            Industries = stockDto.Industries,
+            Purchase = stockDto.Purchase,
+            LastDiv = stockDto.LastDiv,
+            MarketCap = stockDto.MarketCap
+        };
+   }
+  ```
+- Add new End Point method to Create/POST in StockController
+  ```
+  [HttpPost]
+  public IActionResult Create([FromBody] CreateStockRequestDto stockDto) {
+    var stockModel = stockDto.ToStockFromCreateDto();
+    _context.Stocks.Add(stockModel);
+    _context.SaveChanges();
+    return CreatedAtAction(nameof(GetById), new { id = stockModel.Id }, stockModel.ToStockDto());
+  }
+  ```
+
 # +
 
 List and Detail End Point Concept

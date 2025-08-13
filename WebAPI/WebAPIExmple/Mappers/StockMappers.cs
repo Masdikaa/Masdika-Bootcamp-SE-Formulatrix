@@ -10,4 +10,15 @@ public static class StocksMapper {
             LastDiv = stockModel.LastDiv
         };
     }
+
+    public static Stock ToStockFromCreateDto(this CreateStockRequestDto stockDto) {
+        return new Stock {
+            Symbol = stockDto.Symbol,
+            Company = stockDto.Company,
+            Industries = stockDto.Industries,
+            Purchase = stockDto.Purchase,
+            LastDiv = stockDto.LastDiv,
+            MarketCap = stockDto.MarketCap
+        };
+    }
 }
