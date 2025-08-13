@@ -1,0 +1,29 @@
+Package Installation
+dotnet add package Microsoft.EntityFrameworkCore.SqLite
+dotnet add package Microsoft.EntityFrameworkCore.Tools
+dotnet add package Microsoft.EntityFrameworkCore.Design
+dotnet add package AutoMapper.Extensions.Microsoft.DependencyInjection
+dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
+dotnet add package BCrypt.Net-Next
+
+
+Project Structure
+- Models        -> Representasi Member dan Staff
+- Data          -> DbContext
+- DTOs          -> DTO class (Sub Folder Member, Staff)
+- Repositories  -> Repositories layer
+- Services      -> Business Logic
+- Controllers   -> End point API
+
+Controllers	    Menerima request HTTP dan mengirim response.
+Services	    Menjalankan logika bisnis dan validasi.
+Repositories	Berinteraksi langsung dengan database (via DbContext).
+Interfaces	    Mendefinisikan "kontrak" untuk Service dan Repository.
+DTOs	        Membentuk data yang akan ditransfer ke dan dari API.
+Mappers	        Mengonfigurasi aturan pemetaan (AutoMapper).
+Models	        Merepresentasikan tabel di dalam database.
+Data	        Berisi DbContext sebagai sesi koneksi database.
+
+Flow
+Controller  -> Service
+Service     -> Repository
