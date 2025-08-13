@@ -410,6 +410,199 @@ Implement `async` `await` on each end point
     }
 ```
 
+## **Oh Shitt!! We have some problem**
+
+**Controller** hanya untuk mengontrol, **Database** hanya untuk memanggil database
+Controller masih memilki pemanggilan Database
+Jadi gimana dong bang??? anjay
+
+Cobain ini bro
+
+### **Repository Pattern**
+
+Abstraction Layer untuk menempatkan _Business Logic_ daripada memanggil Database langsung dari Controller
+Implementasi Interfacing seperti `GetAllAsync()`
+Pake Dependency Injection biar kalcer dan terlihat seperti :
+
+- **Repository** butuh **Database**<br>
+  `StockRepository` membutuhkan akses ke `ApplicationDbContext`, jadi akan disuntikan pake **Constructor**
+- **Controller** butuh **Repository**<br>
+  `StockController` tidak akan mengimplementasikan `DbContext` secara langsung, melainkan akan membutuhkan `IStockRepository` yang akan disuntikan dalam **Constructor** dari `StockRepository`
+
+**Step by Step:**
+
+- Create **Interfaces** folder and add `IStockRepository.cs`
+  ```
+  public interface IStockRepository {
+    Task<List<Stock>> GetAllAsync();
+  }
+  ```
+- Create **Repositories** folder and add `StockRepository.cs` and inject ApplicationDbContext
+
+  ```
+  public class StockRepository : IStockRepository {
+
+    private readonly ApplicationDbContext _context;
+
+    public StockRepository(ApplicationDbContext context) {
+        _context = context;
+    }
+
+    [HttpGet]
+    public Task<List<Stock>> GetAllAsync() {
+        return _context.Stocks.ToListAsync();
+    }
+  }
+  ```
+
+- Modify StockController by injecting IStockRepository
+
+  ```
+  [Route("stock")]
+  [ApiController]
+  public class StockController : ControllerBase {
+
+    private readonly ApplicationDbContext _context;
+    private readonly IStockRepository _stockRepository;
+
+    public StockController(ApplicationDbContext context, IStockRepository stockRepository) {
+        _context = context;
+        _stockRepository = stockRepository;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll() {
+        var stocks = await _stockRepository.GetAllAsync();
+        var stockDto = stocks.Select(s => s.ToStockDto());
+        return Ok(stocks);
+    }
+  }
+  ```
+
+- Modify program by add `builder.Services.AddScoped<IStockRepository, StockRepository>();`
+
+**Next Step to Refactoring into Repository Pattern**
+
+- Modify `IStockRepository` by implementing the rest of the CRUD method
+  ```
+  public interface IStockRepository {
+    Task<List<Stock>> GetAllAsync();
+    Task<Stock?> GetByIdAsync(int Id);
+    Task<Stock> CreateAsync(Stock stockModel);
+    Task<Stock?> UpdateAsync(int id, UpdateStockRequestDto stockDto);
+    Task<Stock?> DeleteAsync(int id);
+  }
+  ```
+- Implementing all member in `StockRepository`
+
+  ```
+  public async Task<Stock> CreateAsync(Stock stockModel) {
+      await _context.Stocks.AddAsync(stockModel);
+      await _context.SaveChangesAsync();
+      return stockModel;
+  }
+
+  public async Task<Stock?> DeleteAsync(int id) {
+      var stockModel = await _context.Stocks.FirstOrDefaultAsync(stock => stock.Id == id);
+      if (stockModel == null) {
+          return null;
+      }
+      _context.Stocks.Remove(stockModel);
+      await _context.SaveChangesAsync();
+      return stockModel;
+  }
+
+  public Task<List<Stock>> GetAllAsync() {
+      return _context.Stocks.ToListAsync();
+  }
+
+  public async Task<Stock?> GetByIdAsync(int id) {
+      var stockModel = await _context.Stocks.FindAsync(id);
+      return stockModel;
+  }
+
+  public async Task<Stock?> UpdateAsync(int id, UpdateStockRequestDto stockDto) {
+      var existingStock = await _context.Stocks.FirstOrDefaultAsync(stock => stock.Id == id);
+      if (existingStock == null) {
+          return null;
+      }
+      existingStock.Symbol = stockDto.Symbol;
+      existingStock.Company = stockDto.Company;
+      existingStock.Purchase = stockDto.Purchase;
+      existingStock.LastDiv = stockDto.LastDiv;
+      existingStock.Industries = stockDto.Industries;
+      existingStock.MarketCap = stockDto.MarketCap;
+      await _context.SaveChangesAsync();
+      return existingStock;
+  }
+  ```
+
+- Modify `StockController`
+
+  ```
+  [Route("stock")]
+  [ApiController]
+  public class StockController : ControllerBase {
+
+    private readonly IStockRepository _stockRepository;
+
+    public StockController(IStockRepository stockRepository) {
+        _stockRepository = stockRepository;
+    }
+
+    [HttpGet] // Reading data
+    public async Task<IActionResult> GetAll() {
+        var stocks = await _stockRepository.GetAllAsync();
+        var stockDto = stocks.Select(s => s.ToStockDto());
+        return Ok(stocks);
+    }
+
+    [HttpGet("{id}")] // Read data by Id
+    public async Task<IActionResult> GetById([FromRoute] int id) {
+        var stock = await _stockRepository.GetByIdAsync(id);
+        if (stock != null) {
+            return Ok(stock.ToStockDto());
+        }
+        return NotFound();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateStockRequestDto stockDto) {
+        var stockModel = stockDto.ToStockFromCreateDto();
+        await _stockRepository.CreateAsync(stockModel);
+        return CreatedAtAction(nameof(GetById), new { id = stockModel.Id }, stockModel.ToStockDto());
+    }
+
+    [HttpPut]
+    [Route("{id}")]
+    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateStockRequestDto updateDto) {
+        var stockModel = await _stockRepository.UpdateAsync(id, updateDto);
+        if (stockModel == null) {
+            return NotFound();
+        }
+        return Ok(stockModel.ToStockDto());
+    }
+
+    [HttpDelete]
+    [Route("{id}")]
+    public async Task<IActionResult> Delete([FromRoute] int id) {
+        var stockModel = await _stockRepository.DeleteAsync(id);
+        if (stockModel == null) {
+            return NotFound();
+        }
+        return NoContent();
+    }
+  }
+  ```
+
 # +
 
 List and Detail End Point Concept
+
+```
+
+```
+
+```
+
+```
