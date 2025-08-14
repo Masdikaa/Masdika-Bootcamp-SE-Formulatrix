@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FomoGym.Controllers;
 
-[Route("api/members")]
+[Route("fomogym/members")]
 [ApiController]
 public class MembersController : ControllerBase {
     private readonly IMemberService _memberService;
