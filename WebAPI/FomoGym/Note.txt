@@ -32,5 +32,6 @@ Service     -> Repository
 
 TODO
 Form Validation
-User Management Microsoft Identity
-JWT 
+Service layer for auth
+User Management Microsoft Identity ✅
+JWT ✅

@@ -1,5 +1,6 @@
 using FomoGym.DTOs.Member;
 using FomoGym.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FomoGym.Controllers;
@@ -13,12 +14,14 @@ public class MembersController : ControllerBase {
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetAll() {
         var members = await _memberService.GetAllAsync();
         return Ok(members);
     }
 
     [HttpGet("{id}")]
+    [Authorize]
     public async Task<IActionResult> GetById([FromRoute] int id) {
         var member = await _memberService.GetByIdAsync(id);
         if (member == null) {
@@ -28,6 +31,7 @@ public class MembersController : ControllerBase {
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Create([FromBody] CreateMemberDto memberDto) {
         var newMember = await _memberService.CreateAsync(memberDto);
         if (newMember == null) {
@@ -37,6 +41,7 @@ public class MembersController : ControllerBase {
     }
 
     [HttpPut("{id}")]
+    [Authorize]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] CreateMemberDto memberDto) {
         var updatedMember = await _memberService.UpdateAsync(id, memberDto);
         if (updatedMember == null) {
@@ -46,6 +51,7 @@ public class MembersController : ControllerBase {
     }
 
     [HttpDelete("{id}")]
+    [Authorize]
     public async Task<IActionResult> Delete([FromRoute] int id) {
         var deletedMember = await _memberService.DeleteAsync(id);
         if (deletedMember == null) {
