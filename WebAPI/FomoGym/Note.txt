@@ -5,6 +5,7 @@ dotnet add package Microsoft.EntityFrameworkCore.Design
 dotnet add package AutoMapper.Extensions.Microsoft.DependencyInjection
 dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
 dotnet add package BCrypt.Net-Next
+dotnet add package Microsoft.AspNetCore.Identity.EntityFrameworkCore
 
 
 Project Structure
@@ -27,3 +28,9 @@ Data	        Berisi DbContext sebagai sesi koneksi database.
 Flow
 Controller  -> Service
 Service     -> Repository
+
+
+TODO
+Form Validation
+User Management Microsoft Identity
+JWT 
