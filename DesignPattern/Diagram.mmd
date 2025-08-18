@@ -1,0 +1,33 @@
+classDiagram
+    ICoffee <|.. BlackCoffee
+    ICoffee <|.. CoffeeDecorator
+    CoffeeDecorator <|-- MilkDecorator
+    CoffeeDecorator <|-- SugarDecorator
+
+    class ICoffee {
+        <<interface>>
+        +decimal GetPrice()
+        +string GetDescription()
+    }
+
+    class BlackCoffee {
+        +decimal GetPrice()
+        +string GetDescription()
+    }
+
+    class CoffeeDecorator {
+        <<abstract>>
+        -ICoffee Inner
+        +decimal GetPrice()
+        +string GetDescription()
+    }
+
+    class MilkDecorator {
+        +decimal GetPrice()
+        +string GetDescription()
+    }
+
+    class SugarDecorator {
+        +decimal GetPrice()
+        +string GetDescription()
+    }
