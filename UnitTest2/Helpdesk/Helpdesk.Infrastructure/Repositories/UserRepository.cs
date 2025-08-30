@@ -1,5 +1,5 @@
 using Helpdesk.Domain.Entities;
-using Helpdesk.Domain.Repositories;
+using Helpdesk.Domain.Repositories.Interfaces;
 using Helpdesk.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,7 +12,7 @@ public class UserRepository : IUserRepository {
     public UserRepository(HelpdeskDbContext db) => _db = db;
 
     public async Task<User> CreateAsync(User user) {
-        await _db.AddAsync(user);
+        await _db.Users.AddAsync(user);
         await _db.SaveChangesAsync();
         return user;
     }
@@ -22,29 +22,32 @@ public class UserRepository : IUserRepository {
         return users;
     }
 
-    public async Task<User?> GetByIdAsync(User user) {
-        var userToGet = await _db.Users.FirstOrDefaultAsync(user => user.Id == user.Id);
-        if (userToGet == null) {
+    public async Task<User?> GetByIdAsync(Guid userId) {
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null) {
             return null;
         }
-        return userToGet;
+
+        return user;
     }
 
     public async Task<User?> UpdateAsync(User user) {
-        var existingUser = await _db.Users.FirstOrDefaultAsync(user => user.Id == user.Id);
-        if (existingUser == null) {
+        var userToUpdate = await _db.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
+
+        if (userToUpdate == null) {
             return null;
         }
 
-        existingUser.Name = user.Name;
-        existingUser.Email = user.Email;
+        userToUpdate.Name = user.Name;
+        userToUpdate.Email = user.Email;
 
         await _db.SaveChangesAsync();
-        return existingUser;
+        return userToUpdate;
     }
 
-    public async Task<bool> DeleteAsync(User user) {
-        var userToDelete = await _db.Users.FirstOrDefaultAsync(user => user.Id == user.Id);
+    public async Task<bool> DeleteAsync(Guid userId) {
+        var userToDelete = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
         if (userToDelete == null) {
             return false;
