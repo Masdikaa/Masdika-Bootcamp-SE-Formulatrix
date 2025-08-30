@@ -33,6 +33,18 @@ memperburuk masalah atau membuang-buang waktu. Aturan-aturan ini membentuk keran
    **Contoh** : Jika ada laporan "aplikasi crash saat menyimpan data", cari tahu langkah-langkah pastinya. Apakah terjadi saat data kosong? Saat ada karakter aneh? Saat koneksi internet lambat? Penting untuk Menemukan skenario pasti yang 100% menyebabkan crash. <br>
    **Intinya** Bug tidak akan bisa diperbaiki jika tidak bisa dilihat
 
+   ### Intermittent Bug (Bug Intermiten)
+
+   Terkadang, bug tidak muncul secara konsisten atau dapat direproduksi setiap saat. Ini disebut **Intermittent Bug**. Bug ini sangat menantang karena sulit untuk diisolasi dan diverifikasi perbaikannya.
+
+   **Koneksi dengan "Make it Fail":**
+   Meskipun sulit, tujuan dari aturan "Make it Fail" tetap berlaku untuk bug intermiten. Anda harus berusaha keras untuk menemukan kondisi atau skenario yang paling mungkin memicu bug tersebut, bahkan jika itu berarti:
+
+   - **Logging Ekstensif:** Menambahkan log sebanyak mungkin untuk menangkap informasi saat bug muncul.
+   - **Stress Testing:** Menjalankan program di bawah beban tinggi atau mengulang operasi berkali-kali.
+   - **Mencari Pola:** Mengidentifikasi kondisi atau urutan kejadian yang mungkin memicu bug, meskipun tidak selalu.
+     Tujuannya adalah untuk mengubah bug intermiten menjadi bug yang lebih mudah direproduksi, atau setidaknya mendapatkan cukup data untuk memahami penyebabnya.
+
 3. **Quit Thinking and Look** <br>
    Reminder untuk melawan godaan terbesar dari programmer, **Berasumsi** dalam menanggapi suaru permasalahan seperti "_mungkin variable X yang salah_"<br>
    Aturan ini mengatakan: **Hentikan asumsi itu**. Gunakan **debugger**, tambahkan print atau log, dan lihat nilai sebenarnya dari variabel X.
@@ -46,7 +58,7 @@ memperburuk masalah atau membuang-buang waktu. Aturan-aturan ini membentuk keran
 
 5. **Change One Thing at a Time** <br>
    Saat mencoba berbagai hipotesis perbaikan, lakukan satu perubahan saja pada satu waktu. Jika mengubah 5 hal sekaligus dan bug-nya hilang, Pelaku tidak tahu perubahan mana yang sebenarnya menjadi solusi. Jika bug-nya tetap ada, pelaku tidak tahu apakah salah satu perubahan Anda justru memperburuknya.<br>
-   **Contoh** : Anda curiga masalahnya ada pada query database dan cara Anda memformat tanggal. Coba perbaiki query-nya dulu, lalu tes. Jika tidak berhasil, kembalikan query ke semula, lalu coba perbaiki format tanggalnya.
+   **Contoh** : Anda curiga masalahnya ada pada query database dan cara Anda memformat tanggal. Coba perbaiki query-nya dulu, lalu tes. Jika tidak berhasil, kembalikan query ke semula, lalu coba perbaiki format tanggalnya.<br>
    **Intinya** Ini adalah metode ilmiah dasar. Kontrol variabel Anda untuk memahami sebab-akibat.
 
 6. **Keep on Audit Trail** <br>
@@ -70,3 +82,31 @@ memperburuk masalah atau membuang-buang waktu. Aturan-aturan ini membentuk keran
    Kadang-kadang, sebuah bug secara misterius "hilang" begitu saja. Anda me-restart program, melakukan compile ulang, dan bug-nya tidak muncul lagi. Jangan pernah percaya ini. Jika Anda tidak tahu mengapa bug itu hilang, berarti akar masalahnya masih ada dan akan kembali menghantui Anda nanti.
    **Contoh** : Sebuah race condition (bug terkait timing di program multithreading) mungkin tidak terjadi pada percobaan kedua, tapi itu hanya kebetulan. Masalah dasarnya belum teratasi <br>
    **Intinya** Perbaikan sejati datang dari pemahaman akan akar masalah, bukan dari keberuntungan.
+
+## Pros and Cons of Debugging Rules
+
+### Pros (Keuntungan)
+
+*   **Efisiensi & Penghematan Waktu:**
+    *   Mengurangi tebak-tebakan dan solusi acak.
+    *   Fokus pada akar masalah, bukan hanya gejala.
+    *   Proses terstruktur mengurangi frustrasi.
+*   **Peningkatan Kualitas Kode & Pemahaman Sistem:**
+    *   Memaksa pemahaman mendalam tentang sistem.
+    *   Mencegah regresi (bug baru).
+    *   Setiap sesi debugging menjadi pembelajaran.
+*   **Kolaborasi & Dokumentasi Lebih Baik:**
+    *   Memudahkan komunikasi antar tim.
+    *   Mendorong pencatatan (audit trail) untuk referensi.
+
+### Cons (Kekurangan/Tantangan)
+
+*   **Terasa Lambat di Awal:**
+    *   Membutuhkan investasi waktu awal untuk analisis.
+    *   Proses tidak selalu linier.
+*   **Potensi Over-analysis:**
+    *   Terlalu kaku untuk bug yang sangat sederhana.
+    *   Risiko "paralysis by analysis" bagi pemula.
+*   **Membutuhkan Disiplin & Pengalaman:**
+    *   Ada kurva pembelajaran awal.
+    *   Intuisi berpengalaman kadang "melanggar" aturan (tapi ini hasil dari penerapan berulang).
